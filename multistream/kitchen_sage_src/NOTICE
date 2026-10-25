@@ -1,0 +1,1 @@
+Derived from Ph0rk0z/SageAttention2 edc488f904846aa18d344b4365518af71b2beca6, Apache-2.0. Modified: fixed SM75 64x32 sparse delta-route traversal, noncausal D128 HND, current-stream launcher. Original copyright headers retained.

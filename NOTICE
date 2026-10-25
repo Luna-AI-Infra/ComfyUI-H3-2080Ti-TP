@@ -1,0 +1,7 @@
+MiniMax H3 is licensed under the MiniMax H3 Community License Agreement, Copyright © 2026 MiniMax. All Rights Reserved.
+
+This derivative custom-node project does not redistribute model weights. Model usage is governed separately by the model authors' terms. See the model cards linked in docs/MODELS.md.
+
+Based on Comfy-H3-MultiStream by Márton Sági, GPL-3.0-only. The original notice is preserved verbatim in docs/UPSTREAM-NOTICE.txt. Authorization statements in that upstream notice apply only to its named holder and must not be read as a grant to Luna-AI-Infra or users of this fork. New experimental measurements in this fork are attributed separately in docs/RESULTS.md.
+
+See LICENSE and the per-directory third-party license/notice files for source terms.

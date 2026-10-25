@@ -1,0 +1,6 @@
+# Documentation/release tooling only; not the ComfyUI inference environment.
+reportlab
+pypdf
+pdfplumber
+matplotlib
+Pillow
