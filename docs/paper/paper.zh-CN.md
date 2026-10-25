@@ -1,4 +1,4 @@
-# 双 Turing GPU 上的 MiniMax H3 推理优化
+# 双 RTX 2080 Ti 上的 MiniMax H3 推理优化
 
 ## 张量并行、主机权重缓存复用与显式精度取舍
 
@@ -109,6 +109,8 @@ E57成功交付带音轨的360帧视频。首请求包含CPU打包；启动阶�
 
 | 范围 | 基线到候选 | 解释 |
 |---|---|---|
+| E22早期同输入单卡/TP2 block | 238.039→176.618毫秒 | 1.348倍，旧chunk2048实现，不是当前默认档 |
+| E29同输入单卡/TP2 FP32 VAE | 105.816→57.684秒 | 1.834倍，第二遍解码、不含加载，有数值差异 |
 | E39真实TP2 VAE block | 混合41.364→FP16 17.546毫秒 | block级2.358倍，精度不同 |
 | E44主干TP2 block，原输出精度 | 223.272→220.378毫秒 | 1.013倍，远小于部分孤立GEMM收益 |
 | E51 B4 VAE FFN，GPU0/1 | 7.658/7.407→5.376/5.355毫秒 | 约1.38至1.42倍，局部FP16累加 |
@@ -188,6 +190,6 @@ E75未解锁Ref2VA请求223.048秒；另一次探索性硬件状态下冷观测2
 - [5] Larry H3 Turbo LoRA：https://huggingface.co/larryvrh/MiniMax-H3-Turbo-Lora
 - [6] Sparse Kitchen依赖：https://github.com/Zironic/H3-Optimizations
 - [7] NVIDIA CUTLASS：https://github.com/NVIDIA/cutlass
-- [8] 本公开版本：https://github.com/Luna-AI-Infra/ComfyUI-H3-TP
+- [8] 本公开版本：https://github.com/Luna-AI-Infra/ComfyUI-H3-2080Ti-TP
 
 E52实现eb7ab3c；E57实现1d1a3ba；E60记录源码bb1fd3c，canonical实现b1c39d2；E75运行时4369debd。公开源码采用全新Git历史，不分发私人历史提交邮箱。实验ID把表格、图和docs/experiments中的脱敏报告关联起来。

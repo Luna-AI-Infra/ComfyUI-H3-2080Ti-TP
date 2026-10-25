@@ -13,7 +13,7 @@ Follow these steps in order. Ask for a ComfyUI root or Python environment only w
 
 The measured application is ComfyUI0.42.0, runtime-equivalent to upstream commit `46aad33e4d4c0696582611bf450dd93742fa9090` (the recorded deployment HEAD adds documentation only). The complete tested environment is in the README. Other releases are not automatically validated.
 
-Use the existing ComfyUI Python. Check `comfyui_version.py`, `git rev-parse HEAD`, and the plugin directories. Only one of this pack/upstream MultiStream may be enabled. Install this pack under `custom_nodes/ComfyUI-H3-TP` and the pinned GGUF plugin described in INSTALL.md.
+Use the existing ComfyUI Python. Check `comfyui_version.py`, `git rev-parse HEAD`, and the plugin directories. Only one of this pack/upstream MultiStream may be enabled. Install this pack under `custom_nodes/ComfyUI-H3-2080Ti-TP` and the pinned GGUF plugin described in INSTALL.md.
 
 **Success condition:** one copy of each custom-node package, known ComfyUI/Python/PyTorch versions, intended GPUs visible. Avoid globally changing CUDA_VISIBLE_DEVICES for unrelated services.
 
@@ -25,7 +25,7 @@ From this plugin's directory, with the ComfyUI Python:
 python scripts/doctor.py --comfyui ../..
 ```
 
-For TP2, require two compatible devices and `p2p_0_1=true`. For Sparse Kitchen run `python scripts/bootstrap_backends.py`. Build native libraries as described in INSTALL.md; use a CUDA toolkit supporting SM75 and the tested CUTLASS headers. Missing optional dependencies are not evidence that an optimization is active.
+For TP2, require two compatible devices and `p2p_0_1=true`. For Sparse Kitchen run `python scripts/bootstrap_backends.py`. On the measured Linux x86_64/2080 Ti setup, install checksum-pinned libraries with `python scripts/install_prebuilt.py` after checking [runtime requirements](PREBUILT.md). Otherwise build native libraries as described in INSTALL.md; use a CUDA toolkit supporting SM75 and the tested CUTLASS headers. Missing optional dependencies are not evidence that an optimization is active. These binaries are not validated for Windows or stock 11GB cards.
 
 **Success condition:** selected backend installed, selected native libraries present, compatible CUDA devices/P2P. Use a deliberate alternative backend rather than silently changing quality settings.
 

@@ -22,6 +22,17 @@ def script(name):
 
 
 class SetupTests(unittest.TestCase):
+    def test_prebuilt_rejects_tampered_archive(self):
+        installer = script('install_prebuilt')
+        with tempfile.TemporaryDirectory() as folder:
+            archive = Path(folder) / 'bad.tar.gz'
+            archive.write_bytes(b'not the pinned release')
+            with patch.object(installer.platform, 'system', return_value='Linux'):
+                with patch.object(installer.platform, 'machine', return_value='x86_64'):
+                    with patch.object(sys, 'argv', ['installer', '--archive', str(archive)]):
+                        with self.assertRaisesRegex(RuntimeError, 'Archive SHA256 mismatch'):
+                            installer.main()
+
     def test_default_launch_uses_speed_preset(self):
         launcher = script('launch_comfyui')
         config = json.loads((ROOT / 'configs/performance.json').read_text())

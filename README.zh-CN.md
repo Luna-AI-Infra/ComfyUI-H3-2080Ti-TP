@@ -1,14 +1,31 @@
-# ComfyUI H3 TP
+# 双 RTX 2080 Ti + NVLink 的 MiniMax H3 加速方案
 
 [English](README.md) · [安装接入](docs/INSTALL.md) · [模型与下载](docs/MODELS.md) · [开关配置](docs/SETTINGS.md) · [实验结果](docs/RESULTS.md)
 
 给安装Agent：[逐步接入教程与成功标准](docs/AGENT_SETUP.md)、[AGENTS.md](AGENTS.md)。
 
-**面向双 Turing 显卡的 MiniMax H3 优化节点：在 ComfyUI 内实现张量并行、CPU 权重缓存复用、计算与搬运重叠，并显式提供速度与质量开关。**
+**专门面向 RTX 2080 Ti / SM75 的 ComfyUI 加速项目，实测环境为两张 22GB 2080 Ti 加 NVLink。**
+
+| 历史同输入 TP 对照 | 优化前：单卡 | 优化后：双卡张量并行 | 加速比 |
+|---|---:|---:|---:|
+| Qwen 热缓存流式编码，含准备/释放 · E36 | 5.305秒 | 2.570秒 | **2.064倍** |
+| Attention 路由+量化+kernel，同一 Kitchen 后端 · E21 | 60.307毫秒 | 30.981毫秒 | **1.947倍** |
+| 完整视频 VAE 解码，两边均为 FP32 · E29 | 105.816秒 | 57.684秒 | **1.834倍** |
+| 早期完整 Transformer block，INT8/Kitchen50、chunk2048 · E22 | 238.039毫秒 | 176.618毫秒 | **1.348倍** |
+
+以上是**对应范围内的 TP 对照**，不是单卡与双卡完整生成视频的加速比。E36 两边都命中 CPU 打包缓存；E21 为 CUDA event 计时，TP 取较慢卡。E22 的单卡来自本项目同算子实现、权重已驻留，且早于当前 chunk4096/调优FC2/joint/offset 默认档，不能代表当前默认实测。E29 不含模型加载，取第二次解码。Qwen/VAE 输出存在数值差异。[配置复核、具体输入、计时边界和误差](docs/TP-COMPARISON.md)。
+
+叠加其他优化后，已记录最快的 **864×480、5秒视频完整请求为 110.617秒**（E52，热跑，蒸馏8步）。这是整体管线加速后的出片数据，包含额外优化和精度取舍，不能当成上表的纯 TP 收益。
+
+### 张量并行为什么能利用双卡
+
+张量并行把大矩阵权重切成两份，**让两张 2080 Ti 同时计算同一层的不同部分**，再交换所需的激活或部分结果，从而让一次生成利用双卡计算资源。配合分组流式加载和 CPU 缓存，权重分片按阶段进入显存。
+
+**NVLink 提供高速卡间带宽，是这套双卡方案的重要条件。** 本项目通过直接 P2P 拷贝和 CUDA event 交换数据，避免这部分通信绕经 CPU 内存；实测拓扑为 `NV2`。本项目没有做拔掉 NVLink 的对照，其他互联环境未验证。明确支持范围是**双 2080 Ti 22GB / SM75 实测配置**，不能直接推广到普通 11GB 卡或其他显卡组合。
 
 本项目基于 [Comfy-H3-MultiStream](https://github.com/martonsagi/Comfy-H3-MultiStream) 扩展，实验平台是 **Supermicro X9DAi、双路 Xeon E5-2620 v2、256 GB DDR3、双 RTX 2080 Ti 22 GB 和 NVLink**。不需要显卡算力解锁，也不需要修改 ComfyUI 核心。
 
-**默认以速度优先：** 启动器省略 `--config` 时自动选择 `configs/performance.json`，配合附带的性能工作流使用。先构建所需内核，再开启调优 FC2、joint SwiGLU、shared-KV/offset 和 VAE FFN 局部 FP16 累加。RAM 预载单独按需开启；曾失败的主干内部 FP16 输出和 FP16 LoRA 增量不纳入推荐组合。
+**默认以速度优先：** 启动器省略 `--config` 时自动选择 `configs/performance.json`，配合附带的性能工作流使用。先安装所需算子，再开启调优 FC2、joint SwiGLU、shared-KV/offset 和 VAE FFN 局部 FP16 累加。RAM 预载单独按需开启；曾失败的主干内部 FP16 输出和 FP16 LoRA 增量不纳入推荐组合。
 
 ## 项目特点与新增优化
 
@@ -16,7 +33,7 @@
 - **减少重复打包**：canonical 不可变 CPU 权重母版可跨 token 数变化复用；`auto_tokens` 选择有边界的分组和驻留槽，适合切换视频长度后继续使用缓存。
 - **加速条件编码**：Qwen H3 GGUF 的 CPU 流式执行/TP2；独立参考编码 DP 节点按完整素材分配两张卡。
 - **优化视频 VAE**：FP32/混合/FP16 TP2 精度档，独立 SwiGLU 融合和局部 FFN FP16 累加，符合条件时在 Euler 最后一步预取解码器。
-- **SM75 专用内核**：调优 INT8 FC2、主分支与 LoRA 共用 SwiGLU、Sparse Kitchen shared-KV 与 offset 路径，附源码和构建入口。
+- **SM75 专用内核**：调优 INT8 FC2、主分支与 LoRA 共用 SwiGLU、Sparse Kitchen shared-KV 与 offset 路径，附源码、构建入口和[带校验值的 Linux 预编译包](docs/PREBUILT.md)。
 - **可选 RAM 权重常驻**：把指定权重预载到锁定的主机内存；这是独立启动选项，普通节点使用不强制开启。
 
 新增 TP2 与继承的通用 MultiStream 是两条实现路径。本项目速度数据覆盖的是**有直接 P2P 的双 SM75 卡**，不能直接推广到任意卡数与架构。
@@ -49,20 +66,18 @@
 
 ## 安装与接入
 
-把本仓库安装到 `ComfyUI/custom_nodes/ComfyUI-H3-TP`。**先移除或禁用原版 MultiStream 副本**，两者使用相同节点标识，不能重复安装。
+把本仓库安装到 `ComfyUI/custom_nodes/ComfyUI-H3-2080Ti-TP`。**先移除或禁用原版 MultiStream 副本**，两者使用相同节点标识，不能重复安装。
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/Luna-AI-Infra/ComfyUI-H3-TP.git
+git clone https://github.com/Luna-AI-Infra/ComfyUI-H3-2080Ti-TP.git
 git clone https://github.com/city96/ComfyUI-GGUF.git
 git -C ComfyUI-GGUF checkout 373048b8403a7820620065210a691263d4da0a61
 python -m pip install -r ComfyUI-GGUF/requirements.txt
-cd ComfyUI-H3-TP
+cd ComfyUI-H3-2080Ti-TP
 # 使用运行 ComfyUI 的 Python 环境。
 python scripts/bootstrap_backends.py
-git clone https://github.com/NVIDIA/cutlass.git third_party/cutlass
-git -C third_party/cutlass checkout df18f5e4f5de76bed8be1de8e4c245f2f5ec3020
-python scripts/build_kernels.py --cutlass-include third_party/cutlass/include
+python scripts/install_prebuilt.py
 python scripts/doctor.py --comfyui ../..
 ```
 
@@ -78,7 +93,7 @@ python scripts/launch_comfyui.py --comfyui ../.. -- --port 8189
 python scripts/run_workflow.py --url http://127.0.0.1:8189 --workflow workflows/api/t2va-480p-5s.json
 ```
 
-权重校验会读取约 55 GiB，缺失或哈希不匹配均会失败。工作流检查不会提交视频。默认性能配置需要先构建上述内核，构建使用 CUDA 12.8 的 `nvcc`，不在 PATH 时用 `--nvcc` 指定路径。`--config configs/conservative.json` 留作显式排查选项，不是推荐速度档；还需要对应调整图里的融合和后端设置。详细步骤见[安装说明](docs/INSTALL.md)。节点注册成功不能代替后端动态库加载及实际执行验证。
+权重校验会读取约 55 GiB，缺失或哈希不匹配均会失败。工作流检查不会提交视频。默认性能配置需要上述六份算子库；[预编译包、校验值、CUDA12运行库要求和源码构建方法](docs/PREBUILT.md)已提供。`--config configs/conservative.json` 留作显式排查选项，不是推荐速度档；还需要对应调整图里的融合和后端设置。详细步骤见[安装说明](docs/INSTALL.md)。节点注册成功不能代替后端动态库加载及实际执行验证。
 
 典型接线：
 

@@ -82,5 +82,29 @@
     "source_report_sha256": "469f9fd3a7b338dfc9c32c14cd33a5201d6b3ec7f984ba52094a4dff5397a2a2",
     "public_report": "docs/experiments/E75.md",
     "public_sha256": "6c159e467a3face2cb802a5e9b26c2c455b03a34e142ed48e1b5c057f804284c"
+  },
+  {
+    "experiment": "E22",
+    "source_report_sha256": "ab85465b64e7ef208fcfe4191782e8fca94377b566c21b4e634bb2a873a97691",
+    "public_report": "docs/experiments/E22.md",
+    "public_sha256": "c2aed1f0176b4885c660eb436ca5982140a8db4c3db0c06b65536dfa24888acc"
+  },
+  {
+    "experiment": "E29",
+    "source_report_sha256": "787ab2d8fc0c0232353cdeaa54afbf20d12e0fb29d33909d6a2475540b0c749a",
+    "public_report": "docs/experiments/E29.md",
+    "public_sha256": "b79fec63f5fc6783be8e24cf1b9e4ad0bb828ac19a79f08c049b05ba12b7dbfc"
+  },
+  {
+    "experiment": "E21",
+    "source_report_sha256": "22a9cd8afcdb690d349100165a86d80f30730c0714bc3dec5660c7287dff7f32",
+    "public_report": "docs/experiments/E21.md",
+    "public_sha256": "25f31c51e7bd08597b7bc224789212e6baa220eb611c0df40738b8d675d5a2eb"
+  },
+  {
+    "experiment": "E36",
+    "source_report_sha256": "162abc71002039f4ea0f9e65b8dd1a07240a393074b106944bd4e766e60cc2ac",
+    "public_report": "docs/experiments/E36.md",
+    "public_sha256": "1689b10f1328d70b660e286635c1f7390831852117b49e1c31da91d954d1c3c6"
   }
 ]

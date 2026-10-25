@@ -1,7 +1,7 @@
 [project]
-name = "comfyui-h3-tp"
-version = "0.1.0"
-description = "Experimental MiniMax H3 tensor parallelism, caching and SM75 kernels for ComfyUI"
+name = "comfyui-h3-2080ti-tp"
+version = "0.1.1"
+description = "MiniMax H3 acceleration for dual RTX 2080 Ti 22GB and NVLink in ComfyUI"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
 readme = "README.md"
@@ -9,11 +9,11 @@ dependencies = []
 authors = [{ name = "Luna-AI-Infra" }, { name = "Márton Sági" }]
 
 [project.urls]
-Repository = "https://github.com/Luna-AI-Infra/ComfyUI-H3-TP"
-Issues = "https://github.com/Luna-AI-Infra/ComfyUI-H3-TP/issues"
+Repository = "https://github.com/Luna-AI-Infra/ComfyUI-H3-2080Ti-TP"
+Issues = "https://github.com/Luna-AI-Infra/ComfyUI-H3-2080Ti-TP/issues"
 
 [tool.comfy]
-DisplayName = "H3 TP — Luna AI Infra"
+DisplayName = "H3 TP for RTX 2080 Ti — Luna AI Infra"
 requires-comfyui = ">=0.42.0"
 
 # Install into ComfyUI/custom_nodes; do not pip-install this tree as a standalone app.

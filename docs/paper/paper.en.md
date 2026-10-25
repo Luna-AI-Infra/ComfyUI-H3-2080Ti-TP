@@ -1,4 +1,4 @@
-# MiniMax H3 on Dual Turing GPUs
+# MiniMax H3 on Dual RTX 2080 Ti GPUs
 
 ## Tensor Parallelism, Reusable Host Packs and Explicit Precision Trade-offs
 
@@ -109,6 +109,8 @@ The bundled videos are E52 five seconds, E60 ten seconds and E57 fifteen seconds
 
 | Scope | Baseline to candidate | Interpretation |
 |---|---|---|
+| E22 early same-input single/TP2 block | 238.039 to 176.618 ms | 1.348x; older chunk2048 implementation, not today's default |
+| E29 same-input single/TP2 FP32 VAE | 105.816 to 57.684 s | 1.834x; second decode, loading excluded, numerical differences |
 | E39 real TP2 VAE block | Mixed 41.364 to FP16 17.546 ms | 2.358x at block scope; different precision |
 | E44 original-output TP2 main block | 223.272 to 220.378 ms | 1.013x; smaller than selected isolated GEMM gains |
 | E51 B4 VAE FFN, GPU0/1 | 7.658/7.407 to 5.376/5.355 ms | About 1.38-1.42x, local FP16 accumulation |
@@ -188,6 +190,6 @@ The strongest direct observations are successful low-memory TP2 generation, elim
 - [5] Larry MiniMax H3 Turbo LoRA: https://huggingface.co/larryvrh/MiniMax-H3-Turbo-Lora
 - [6] Sparse Kitchen dependency: https://github.com/Zironic/H3-Optimizations
 - [7] NVIDIA CUTLASS: https://github.com/NVIDIA/cutlass
-- [8] This release: https://github.com/Luna-AI-Infra/ComfyUI-H3-TP
+- [8] This release: https://github.com/Luna-AI-Infra/ComfyUI-H3-2080Ti-TP
 
 E52 implementation eb7ab3c; E57 implementation 1d1a3ba; E60 recorded source bb1fd3c above canonical implementation b1c39d2; E75 runtime 4369debd. The public source export starts fresh Git history and does not redistribute private historical commit/email metadata. The experiment IDs link the tables and figures to the sanitized reports included in docs/experiments.

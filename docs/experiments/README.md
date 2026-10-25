@@ -16,3 +16,9 @@ These reports preserve successes, withdrawn candidates and failures. They are re
 - [E64](E64.md)
 - [E65](E65.md)
 - [E75](E75.md)
+
+- [E22: single-GPU versus TP2 block](E22.md)
+- [E29: single-GPU versus TP2 VAE](E29.md)
+
+- [E21: attention TP scaling](E21.md)
+- [E36: Qwen streaming TP](E36.md)

@@ -15,11 +15,11 @@ In the Python environment that already runs ComfyUI:
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/Luna-AI-Infra/ComfyUI-H3-TP.git
+git clone https://github.com/Luna-AI-Infra/ComfyUI-H3-2080Ti-TP.git
 git clone https://github.com/city96/ComfyUI-GGUF.git
 git -C ComfyUI-GGUF checkout 373048b8403a7820620065210a691263d4da0a61
 python -m pip install -r ComfyUI-GGUF/requirements.txt
-cd ComfyUI-H3-TP
+cd ComfyUI-H3-2080Ti-TP
 ```
 
 Do not load both this pack and the upstream MultiStream pack: they register the same node names. Follow the GGUF plugin's own dependency instructions. `dependencies=[]` in this pack does not mean CUDA toolchains, GGUF and optional attention backends are provided automatically. Do not install a different PyTorch wheel blindly into an existing ComfyUI environment.
@@ -38,7 +38,17 @@ This fetches [Zironic/H3-Optimizations](https://github.com/Zironic/H3-Optimizati
 
 If Git's TLS transport fails on the host, `python scripts/bootstrap_backends.py --archive` downloads the same pinned revision as a source archive and records its revision marker. It does not disable HTTPS certificate checks or substitute an unpinned branch. A failed/unknown pre-existing directory is not silently overwritten.
 
-## 3. Build the kernels required by the default performance preset
+## 3. Install the operators required by the default performance preset
+
+For the measured Linux x86_64/2080 Ti setup, [prebuilt operators](PREBUILT.md) are available with pinned archive/library/source hashes:
+
+```bash
+python scripts/install_prebuilt.py
+```
+
+This checks ELF loading, not GPU correctness or complete-generation success. CUDA12 cuBLASLt is still needed; the runtime is not bundled. If installation succeeds, skip the compilation commands below. Otherwise resolve the reported dependency or build from source deliberately; no automatic system CUDA replacement is performed.
+
+### Source-build alternative
 
 Use a CUDA toolkit with SM75 support. CUDA 12.8 was used for the packaged C-ABI libraries; this is distinct from the CUDA 13.0 runtime in the tested PyTorch wheel.
 

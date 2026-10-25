@@ -1,5 +1,11 @@
 # Public export validation
 
+## RTX 2080 Ti identity and prebuilt release (E80)
+
+The repository is now `ComfyUI-H3-2080Ti-TP`. README comparisons distinguish E21 attention, E22 early whole-block, E29 VAE and E36 warm Qwen timings. E22's original normal JSONs share commit, input, backend, keep fraction, chunk and timing repetitions; the 1.348× result predates the current speed preset. See [configuration audit](TP-COMPARISON.md).
+
+Six no-lineinfo Linux x86_64/SM75 libraries were built with CUDA12.8 (FC2 with pinned CUTLASS3.8), debug-stripped and scanned for private build markers. The final build passed ten small checks on both RTX2080Ti cards under the resource guard. A clean staging installation using the release archive passed its SHA256/source checks and loaded all six ELF libraries. A CPU regression checks rejection of a tampered archive. This is not a new performance result or a complete generation test. [Build provenance](validation/prebuilt-build.json), [small GPU checks](validation/prebuilt-smoke.json), [prebuilt installation](PREBUILT.md).
+
 ## Installation audit (2026-10-25)
 
 The README procedure was reviewed as a sequence of shell commands. Fixes add the pinned GGUF dependency installation, keep the working directory consistent, require a selected model task, and provide explicit startup/graph-check commands in both languages. Missing required weights now fail verification instead of returning success. The RAM launcher now sets ComfyUI arguments before imports that parse them.

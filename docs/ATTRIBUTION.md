@@ -19,4 +19,6 @@ Dependencies and adapted sources:
 
 Attribution/license files embedded in `multistream/kitchen_sage_src` and the Kitchen kernel source directories remain in place. See [UPSTREAM-NOTICE.txt](UPSTREAM-NOTICE.txt) for the upstream notice verbatim. Any authorization described there belongs to its named holder and must not be represented as authorization granted to this fork or its users.
 
+The prebuilt operator release retains the same source terms and includes the relevant notices. Tuned FC2 uses the pinned CUTLASS 3.8.0 headers; [its BSD license](licenses/CUTLASS-LICENSE.txt) accompanies the binary archive. Corresponding kernel source is available at the binary release tag. CUDA/cuBLAS runtimes and model weights are not redistributed. See [prebuilt compatibility and installation](PREBUILT.md).
+
 The three public videos are selected generated experimental outputs, remuxed without private container metadata. Historical input reference images are not distributed. Reports are selected redacted copies; raw machine logs, giant profiler captures, SSH/admin helpers, checkpoints, original private author history and private input assets are intentionally excluded.

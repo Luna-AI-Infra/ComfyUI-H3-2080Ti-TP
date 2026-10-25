@@ -1,14 +1,31 @@
-# ComfyUI H3 TP
+# MiniMax H3 for Dual RTX 2080 Ti + NVLink
 
 [简体中文](README.zh-CN.md) · [Install](docs/INSTALL.md) · [Models](docs/MODELS.md) · [Settings](docs/SETTINGS.md) · [Experiments](docs/RESULTS.md)
 
 For an installation agent: follow [the step-by-step setup and success checks](docs/AGENT_SETUP.md) and [AGENTS.md](AGENTS.md).
 
-**MiniMax H3 on two Turing GPUs: tensor parallelism, reusable CPU weight packs, overlapped transfers, and explicit speed/quality controls inside ComfyUI.**
+**An RTX 2080 Ti / SM75 acceleration project for ComfyUI, measured on two 22 GB cards connected by NVLink.**
+
+| Historical same-input TP comparison | Before: one GPU | After: two GPUs with TP | Speedup |
+|---|---:|---:|---:|
+| Qwen warm streaming encode, including preparation/release · E36 | 5.305 s | 2.570 s | **2.064×** |
+| Attention routing + quantization + kernel, same Kitchen backend · E21 | 60.307 ms | 30.981 ms | **1.947×** |
+| Complete video VAE decode, FP32 on both paths · E29 | 105.816 s | 57.684 s | **1.834×** |
+| Early full transformer block, INT8/Kitchen50, chunk2048 · E22 | 238.039 ms | 176.618 ms | **1.348×** |
+
+These measure **TP at the stated scopes**, not a single-GPU versus dual-GPU complete-video speedup. E36 uses warm CPU packs on both paths. E21 uses CUDA-event time, taking the slower TP rank. E22 uses the project's same-operator single-GPU implementation, with weights already resident; it predates the current chunk4096/tuned-FC2/joint/offset default and is not a fresh measurement of it. E29 excludes model loading and reports the second decode. Qwen/VAE outputs are not identical. [Configuration audit, inputs, timing boundaries and numerical differences](docs/TP-COMPARISON.md).
+
+With the broader optimized pipeline, the fastest recorded successful **5-second 864×480 video took 110.617 seconds** (E52, warm, distilled 8-step configuration). That is a complete-request result with additional optimizations and precision choices, not the TP-only comparison above.
+
+### What tensor parallelism does
+
+TP splits large layer weights into two shards. **Both RTX 2080 Ti cards compute different parts of the same layer at the same time**, then exchange the required activations or partial results. This uses both cards' compute resources for one generation. Grouped streaming and CPU caches stage the weight shards within the available VRAM.
+
+**NVLink provides the high-bandwidth GPU-to-GPU connection needed to make these frequent exchanges practical on this setup.** The implementation uses direct peer copies and CUDA events; it avoids routing those transfers through CPU memory. The measured platform has an `NV2` link. A link-disabled comparison was not measured, and other interconnects are unvalidated. This repository targets **dual RTX 2080 Ti 22 GB / SM75**, not generic multi-GPU hardware or stock 11 GB cards.
 
 This experimental custom-node pack builds on [Comfy-H3-MultiStream](https://github.com/martonsagi/Comfy-H3-MultiStream). Its development target is a Supermicro X9DAi with **2 × Xeon E5-2620 v2, 256 GB DDR3, and 2 × RTX 2080 Ti 22 GB connected by NVLink**. It does not require a GPU unlock or a modified ComfyUI core.
 
-**Speed-first by default:** the launcher selects `configs/performance.json` when `--config` is omitted. Pair it with the bundled performance workflows after building the required kernels. This enables tuned FC2, joint SwiGLU, shared-KV/offset routing and local FP16 VAE FFN accumulation. RAM preload stays opt-in. Failed internal-FP16-output and FP16-LoRA candidates are excluded.
+**Speed-first by default:** the launcher selects `configs/performance.json` when `--config` is omitted. Pair it with the bundled performance workflows after installing the required operators. This enables tuned FC2, joint SwiGLU, shared-KV/offset routing and local FP16 VAE FFN accumulation. RAM preload stays opt-in. Failed internal-FP16-output and FP16-LoRA candidates are excluded.
 
 ## What this project adds
 
@@ -16,7 +33,7 @@ This experimental custom-node pack builds on [Comfy-H3-MultiStream](https://gith
 - **Reuse instead of repacking:** immutable canonical CPU packs survive changes in token count; `auto_tokens` chooses bounded GPU groups/slots. This helps repeated jobs with different video lengths.
 - **Faster conditioning:** Qwen H3 GGUF CPU streaming/TP2, plus a separate reference-encoder DP node for eligible multi-reference inputs.
 - **VAE optimization:** selectable FP32/mixed/FP16 TP2 policies, optional SwiGLU fusion, optional local FP16 FFN accumulation, and decoder prefetch during the final eligible Euler step.
-- **SM75 kernels:** tuned INT8 FC2 GEMM, joint main/LoRA SwiGLU, shared-KV/offset Sparse Kitchen paths, with source and explicit build scripts.
+- **SM75 kernels:** tuned INT8 FC2 GEMM, joint main/LoRA SwiGLU, shared-KV/offset Sparse Kitchen paths, with source, build scripts and a [checksum-pinned Linux prebuilt release](docs/PREBUILT.md).
 - **An optional RAM-resident loader:** keep a selected weight set in locked host RAM. This is a separate launch option, not a requirement for using the nodes.
 
 The TP2 path is distinct from the inherited general MultiStream path. This fork's published performance results cover **two SM75 GPUs with direct peer access**, not arbitrary multi-GPU hardware.
@@ -49,20 +66,18 @@ Click a preview to open its audio/video file. Media container metadata has been 
 
 ## Install and connect
 
-Install this repository into `ComfyUI/custom_nodes/ComfyUI-H3-TP`. **Remove/disable the original MultiStream copy first**: both packs register the same node identifiers.
+Install this repository into `ComfyUI/custom_nodes/ComfyUI-H3-2080Ti-TP`. **Remove/disable the original MultiStream copy first**: both packs register the same node identifiers.
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/Luna-AI-Infra/ComfyUI-H3-TP.git
+git clone https://github.com/Luna-AI-Infra/ComfyUI-H3-2080Ti-TP.git
 git clone https://github.com/city96/ComfyUI-GGUF.git
 git -C ComfyUI-GGUF checkout 373048b8403a7820620065210a691263d4da0a61
 python -m pip install -r ComfyUI-GGUF/requirements.txt
-cd ComfyUI-H3-TP
+cd ComfyUI-H3-2080Ti-TP
 # Use the Python environment that runs ComfyUI.
 python scripts/bootstrap_backends.py
-git clone https://github.com/NVIDIA/cutlass.git third_party/cutlass
-git -C third_party/cutlass checkout df18f5e4f5de76bed8be1de8e4c245f2f5ec3020
-python scripts/build_kernels.py --cutlass-include third_party/cutlass/include
+python scripts/install_prebuilt.py
 python scripts/doctor.py --comfyui ../..
 ```
 
@@ -78,7 +93,7 @@ python scripts/launch_comfyui.py --comfyui ../.. -- --port 8189
 python scripts/run_workflow.py --url http://127.0.0.1:8189 --workflow workflows/api/t2va-480p-5s.json
 ```
 
-The verifier fails if any required asset is missing or mismatched; it reads about 55 GiB. The workflow check does not submit a video. The default performance preset requires the native libraries built above; use CUDA 12.8 `nvcc` for that build (select its path with `--nvcc` if needed). `--config configs/conservative.json` is an explicit diagnostic fallback, not the recommended speed profile; graph-side fusion/backend settings must also be adjusted. See [the complete installation guide](docs/INSTALL.md). Node registration alone does not validate backend library loading or GPU execution.
+The verifier fails if any required asset is missing or mismatched; it reads about 55 GiB. The workflow check does not submit a video. The default performance preset requires the six libraries installed above; [download checksums, CUDA12 runtime requirements and source-build alternative](docs/PREBUILT.md) are documented. `--config configs/conservative.json` is an explicit diagnostic fallback, not the recommended speed profile; graph-side fusion/backend settings must also be adjusted. See [the complete installation guide](docs/INSTALL.md). Node registration alone does not validate backend library loading or GPU execution.
 
 Typical graph:
 
