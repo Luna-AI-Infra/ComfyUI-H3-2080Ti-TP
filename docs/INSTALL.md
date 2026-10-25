@@ -18,6 +18,8 @@ cd ComfyUI/custom_nodes
 git clone https://github.com/Luna-AI-Infra/ComfyUI-H3-TP.git
 git clone https://github.com/city96/ComfyUI-GGUF.git
 git -C ComfyUI-GGUF checkout 373048b8403a7820620065210a691263d4da0a61
+python -m pip install -r ComfyUI-GGUF/requirements.txt
+cd ComfyUI-H3-TP
 ```
 
 Do not load both this pack and the upstream MultiStream pack: they register the same node names. Follow the GGUF plugin's own dependency instructions. `dependencies=[]` in this pack does not mean CUDA toolchains, GGUF and optional attention backends are provided automatically. Do not install a different PyTorch wheel blindly into an existing ComfyUI environment.
@@ -29,11 +31,10 @@ The inherited Sage backend requires [SageAttention](https://github.com/thu-ml/Sa
 For the benchmarked Sparse Kitchen path:
 
 ```bash
-cd ComfyUI/custom_nodes/ComfyUI-H3-TP
 python scripts/bootstrap_backends.py
 ```
 
-This fetches [Zironic/H3-Optimizations](https://github.com/Zironic/H3-Optimizations) at `c6bc3cfc58c18c3a6220aeea09116e1eebd91669` into `third_party/H3-Optimizations`. Its native backend may compile on first use. You can instead set `H3_SPARSE_KITCHEN_SOURCE` to a compatible checkout. The backend source is not duplicated into this release.
+This fetches [Zironic/H3-Optimizations](https://github.com/Zironic/H3-Optimizations) at `c6bc3cfc58c18c3a6220aeea09116e1eebd91669` into `third_party/H3-Optimizations`. This pinned revision includes a prebuilt Linux C-ABI backend under `native/bin`; it does not automatically compile a missing library. You can instead set `H3_SPARSE_KITCHEN_SOURCE` to a compatible checkout. The backend source is not duplicated into this release.
 
 If Git's TLS transport fails on the host, `python scripts/bootstrap_backends.py --archive` downloads the same pinned revision as a source archive and records its revision marker. It does not disable HTTPS certificate checks or substitute an unpinned branch. A failed/unknown pre-existing directory is not silently overwritten.
 
@@ -66,11 +67,13 @@ Source defaults enable joint SwiGLU, so build `swiglu` even if you do not select
 Use [MODELS.md](MODELS.md) and `configs/models.json`. Then:
 
 ```bash
-python scripts/verify_models.py --comfyui ../..
+python scripts/verify_models.py --comfyui ../.. --task fl2va
 python scripts/launch_comfyui.py --comfyui ../.. --config configs/conservative.json
 ```
 
 After kernels/backends are ready, select `configs/performance.json`. The scripts assume they run with the ComfyUI Python environment. Paths above are relative examples, not a required disk layout. The launcher is opt-in; ordinary ComfyUI startup still registers all nodes.
+
+All commands after step 1 run from this plugin directory. Choose `--task ref2va` instead for reference workflows. Verification requires every asset used by the selected bundled example, including its Turbo LoRA, and fails on missing files. Extra model directories configured through ComfyUI YAML are not discovered by this verifier: provide the listed model paths (symlinks are supported). `doctor.py` is informational, not a pass/fail installer. Both bundled API paths select Sparse Kitchen even with the conservative process preset. A functioning Linux ComfyUI installation and its requirements are prerequisites; install its own `requirements.txt` with the selected environment before adding this pack. If the shipped Sparse Kitchen library cannot load, stop and follow its native CMake build instructions (CMake >=3.26, C++20/CUDA and suitable architecture flags); do not expect an automatic first-use build. This is separate from this pack's six optional CUDA 12.8 libraries.
 
 The launcher's `--reserve-vram 15` is the process-level reserve used in the test environment. The TP node's `reserve_vram_gb=4` is a separate workspace/planner input. Neither is a universal recommended allocation for other GPUs.
 

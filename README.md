@@ -50,12 +50,28 @@ Install this repository into `ComfyUI/custom_nodes/ComfyUI-H3-TP`. **Remove/disa
 ```bash
 cd ComfyUI/custom_nodes
 git clone https://github.com/Luna-AI-Infra/ComfyUI-H3-TP.git
+git clone https://github.com/city96/ComfyUI-GGUF.git
+git -C ComfyUI-GGUF checkout 373048b8403a7820620065210a691263d4da0a61
+python -m pip install -r ComfyUI-GGUF/requirements.txt
 cd ComfyUI-H3-TP
 # Use the Python environment that runs ComfyUI.
+python scripts/bootstrap_backends.py
 python scripts/doctor.py --comfyui ../..
 ```
 
-For Sparse Kitchen, fetch the pinned backend with `python scripts/bootstrap_backends.py`. Build native kernels before enabling the performance preset; see [the complete installation guide](docs/INSTALL.md). Place the exact model variants from [the model manifest and download links](docs/MODELS.md) into ComfyUI's model folders.
+These commands assume an existing working **Linux ComfyUI environment**, with its dependencies installed and two P2P-capable CUDA GPUs. They are not a fresh OS installer. The pinned Sparse Kitchen source includes a prebuilt Linux library; a toolkit/compiler is needed when rebuilding it or enabling this pack's additional native kernels. If GGUF is already installed, inspect its version instead of cloning over it. Use the same Python for every command. `doctor.py` reports capabilities; a zero exit status does not certify readiness.
+
+Place the exact model variants from [the model manifest and download links](docs/MODELS.md) into ComfyUI's model folders. Staying in this plugin directory:
+
+```bash
+# Text-only / first-last-frame example; use --task ref2va for reference tasks.
+python scripts/verify_models.py --comfyui ../.. --task fl2va
+python scripts/launch_comfyui.py --comfyui ../.. --config configs/conservative.json -- --port 8189
+# In another terminal, with the same Python and plugin working directory:
+python scripts/run_workflow.py --url http://127.0.0.1:8189 --workflow workflows/api/t2va-480p-5s.json
+```
+
+The verifier fails if any required asset is missing or mismatched; it reads about 55 GiB. The workflow check does not submit a video. The conservative preset still needs Sparse Kitchen for these example graphs; it only disables the additional custom performance kernels. Build those kernels before enabling `configs/performance.json`; see [the complete installation guide](docs/INSTALL.md). Node registration alone does not validate backend library loading or GPU execution.
 
 Typical graph:
 

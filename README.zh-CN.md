@@ -50,12 +50,28 @@
 ```bash
 cd ComfyUI/custom_nodes
 git clone https://github.com/Luna-AI-Infra/ComfyUI-H3-TP.git
+git clone https://github.com/city96/ComfyUI-GGUF.git
+git -C ComfyUI-GGUF checkout 373048b8403a7820620065210a691263d4da0a61
+python -m pip install -r ComfyUI-GGUF/requirements.txt
 cd ComfyUI-H3-TP
 # 使用运行 ComfyUI 的 Python 环境。
+python scripts/bootstrap_backends.py
 python scripts/doctor.py --comfyui ../..
 ```
 
-Sparse Kitchen 后端通过 `python scripts/bootstrap_backends.py` 获取固定版本；启用性能配置前先构建本地 CUDA 库。详细步骤见[安装说明](docs/INSTALL.md)。模型变体、下载链接、放置位置和校验哈希见[模型说明](docs/MODELS.md)。
+以上步骤要求已有正常运行的 **Linux ComfyUI 环境**及其依赖，以及两张支持 P2P 的 CUDA 显卡，不是从空系统开始的一键安装。固定版本的 Sparse Kitchen 已附带 Linux 预编译库；重编译后端或启用本项目额外内核时才需要工具链。已有 GGUF 插件时先检查版本，不要重复克隆。所有命令使用同一个 ComfyUI Python。`doctor.py` 只报告能力，退出码为零不代表已具备运行条件。
+
+按[模型说明](docs/MODELS.md)下载并放置对应权重，然后保持在本插件目录执行：
+
+```bash
+# 文生视频/首尾帧任务；参考任务改用 --task ref2va。
+python scripts/verify_models.py --comfyui ../.. --task fl2va
+python scripts/launch_comfyui.py --comfyui ../.. --config configs/conservative.json -- --port 8189
+# 另开终端，使用同一 Python，并进入本插件目录：
+python scripts/run_workflow.py --url http://127.0.0.1:8189 --workflow workflows/api/t2va-480p-5s.json
+```
+
+权重校验会读取约 55 GiB，缺失或哈希不匹配均会失败。工作流检查不会提交视频。示例图即使使用保守启动配置也需要 Sparse Kitchen；保守配置仅关闭额外的自定义性能内核。启用 `configs/performance.json` 前按[安装说明](docs/INSTALL.md)构建对应库。节点注册成功不能代替后端动态库加载及实际执行验证。
 
 典型接线：
 

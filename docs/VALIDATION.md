@@ -1,5 +1,11 @@
 # Public export validation
 
+## Installation audit (2026-10-25)
+
+The README procedure was reviewed as a sequence of shell commands. Fixes add the pinned GGUF dependency installation, keep the working directory consistent, require a selected model task, and provide explicit startup/graph-check commands in both languages. Missing required weights now fail verification instead of returning success. The RAM launcher now sets ComfyUI arguments before imports that parse them.
+
+CPU regressions (`python -m unittest discover -s tests -p test_setup.py -v`) passed for both missing-weight task variants and the RAM-loader argument handoff. On the measured Linux host, the pinned backend's shipped library loaded through ctypes and reported ABI 4; `ldd` found its shared dependencies. It is a prebuilt C-ABI library, not an automatic first-use extension build. No model inference or fresh-machine environment installation was performed during this audit. The prior GPU/package checks below retain their original scope.
+
 The export starts from historical H3 runtime `4369debd37e4f5a426796417fdcdeb5d2cf0e5c7`. Public code packaging commit `5c2723d` relocates native-library lookup and includes original kernel sources plus portable helpers. Follow-up `de32c57` adds pinned archive bootstrap and optional-backend guidance. Neither is a newly measured complete-generation speedup.
 
 | Check | Result | Evidence |

@@ -34,10 +34,10 @@ For TP2, require two compatible devices and `p2p_0_1=true`. For Sparse Kitchen r
 Read `configs/models.json`. Download or locate the required assets in the stated ComfyUI model folders. Do not substitute a generic Qwen chat checkpoint, a pruned diffusion checkpoint, FL2VA for Ref2VA, or an unrelated Turbo LoRA. Do not commit the assets.
 
 ```bash
-python scripts/verify_models.py --comfyui ../..
+python scripts/verify_models.py --comfyui ../.. --task fl2va
 ```
 
-The tool skips uninstalled alternatives; ensure the assets for the selected task really exist, not just that the command returned zero. Ref2VA also needs user-provided references; example filenames are placeholders. Preserve private input media outside Git.
+Select `--task ref2va` for reference tasks. The tool requires all five assets for the chosen bundled example and fails on missing files or hash mismatches; only the other diffusion-model variant is skipped. Ref2VA also needs user-provided references; example filenames are placeholders. Preserve private input media outside Git.
 
 **Success condition:** exact required filenames/hashes and correct task variant. Record user-requested substitutions as unvalidated changes.
 

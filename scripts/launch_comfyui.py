@@ -1,4 +1,4 @@
-"""Portable opt-in launcher. Config paths resolve relative to the config file."""
+"""Portable opt-in launcher. RAM model/report paths resolve relative to ComfyUI."""
 import argparse
 import json
 import os
@@ -25,6 +25,8 @@ def main():
         raise ValueError('--comfyui must point to a ComfyUI checkout')
     os.chdir(root)
     sys.path.insert(0, str(root))
+    # ComfyUI imports can parse argv during RAM-loader installation.
+    sys.argv = ['main.py'] + config.get('comfyui_args', []) + remaining
     import torch
     torch.backends.cuda.matmul.allow_tf32 = False
     torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = False
@@ -45,7 +47,6 @@ def main():
         import comfy.options
         comfy.options.enable_args_parsing()
         install()
-    sys.argv = ['main.py'] + config.get('comfyui_args', []) + remaining
     runpy.run_path(str(root / 'main.py'), run_name='__main__')
 
 
