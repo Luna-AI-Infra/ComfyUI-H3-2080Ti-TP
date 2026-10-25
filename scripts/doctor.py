@@ -23,6 +23,8 @@ def main():
     for name in ('fc2_int8', 'swiglu', 'kitchen_shared_kv', 'kitchen_offsets', 'vae_swiglu', 'vae_half'):
         out['native_kernels'][name] = (ROOT / 'kernels/build' / f'lib{name}.so').is_file()
     out['sparse_kitchen_checkout'] = (ROOT / 'third_party/H3-Optimizations/h3_optimizations').is_dir()
+    out['optional_backends'] = {name: importlib.util.find_spec(name) is not None
+                                for name in ('sageattention', 'flash_attn_turing')}
     if importlib.util.find_spec('torch'):
         import torch
         out['cuda_available'] = torch.cuda.is_available()
