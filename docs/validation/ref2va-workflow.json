@@ -1,0 +1,41 @@
+{
+  "scope": "Frontend import/export and native graph validation only; no model execution or generated-video quality/performance validation",
+  "comfyui": "0.42.0",
+  "frontend": "1.57.1",
+  "editor_nodes": 24,
+  "reference_connections_preserved": true,
+  "editor_export_equals_api_inputs": true,
+  "checks": [
+    {
+      "graph": "api",
+      "native_validation_passed": true
+    },
+    {
+      "graph": "frontend_export",
+      "native_validation_passed": true
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "workflows/ui/ref2va-robot-480p-5s.json",
+      "sha256": "16a25a48f2463f7d1e2bbf36230eec1d35a4b0469e1a91de842d37bcaba75123",
+      "bytes": 21882
+    },
+    {
+      "file": "workflows/api/ref2va-robot-480p-5s.json",
+      "sha256": "603a4d073388ce2c9f700e266e616868a9c4dbe163636a67f87459b4ea295b12",
+      "bytes": 6083
+    },
+    {
+      "file": "examples/reference/reference-a.png",
+      "sha256": "bb1c124750308701704af849b09a19170964c4b14bffe79db02b78acf66e737d",
+      "bytes": 7990
+    },
+    {
+      "file": "examples/reference/reference-b.png",
+      "sha256": "f8fa05194715fac9ea29d9be5e67c199187bfcc79fae9a46584bec3a53bdd164",
+      "bytes": 7898
+    }
+  ],
+  "note": "A frontend getCanvas initialization error was observed before workflow import; graph import/export and both native validations succeeded. No generation was submitted."
+}

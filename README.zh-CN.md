@@ -83,6 +83,8 @@ Qwen GGUF加载 → H3 Qwen Execution → 原生H3条件编码 / H3 Reference to
 
 [UI示例](workflows/ui/)用于前端导入，[API示例](workflows/api/)用于 HTTP 提交。两种格式及验证范围见[工作流说明](workflows/README.md)。仅复制工作流不会自动携带进程环境开关。
 
+参考图生视频可直接使用[双参考图 UI 工作流与教程](workflows/REF2VA.md)，附带[两张 CC0 机器人参考图](examples/reference/)及参数一致的 API 图，默认使用 `match` 缩放。已通过前端导入/导出和原生图校验；这组新输入尚无完整生成耗时数据。
+
 实测主程序为 **ComfyUI 0.42.0**，运行时代码等同上游[`46aad33e4d4c0696582611bf450dd93742fa9090`](https://github.com/Comfy-Org/ComfyUI/commit/46aad33e4d4c0696582611bf450dd93742fa9090)，记录中的部署HEAD只增加文档。Agent接入顺序：识别现有Python环境→检查重复节点包→构建选定后端/内核→校验所需权重→启动独立服务→用`scripts/run_workflow.py`检查图→按需加`--submit`提交一条测试。
 
 ### 实测权重下载

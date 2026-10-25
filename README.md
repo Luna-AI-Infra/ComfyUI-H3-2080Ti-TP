@@ -83,6 +83,8 @@ native sampler → H3 TP VAE Decode → native audio/video save nodes
 
 Use [UI examples](workflows/ui/) in the editor and [API examples](workflows/api/) for HTTP submissions. Their format and validation status are documented in [workflows/README.md](workflows/README.md). A workflow alone does not carry process environment settings.
 
+For reference-image generation, use the [Ref2VA editor workflow and walkthrough](workflows/REF2VA.md), with two bundled [CC0 robot reference images](examples/reference/). It defaults to `match` reference sizing and includes a matching API graph. Import/export and native graph validation passed; this new input pair has no measured generation time yet.
+
 The tested host is **ComfyUI 0.42.0**, runtime-equivalent to upstream [`46aad33e4d4c0696582611bf450dd93742fa9090`](https://github.com/Comfy-Org/ComfyUI/commit/46aad33e4d4c0696582611bf450dd93742fa9090). The recorded deployment HEAD only adds documentation. For agents: identify the existing Python environment → check duplicate node packs → build selected backends/kernels → verify required model hashes → start an isolated server → check a graph with `scripts/run_workflow.py` → submit one requested test with `--submit`.
 
 ### Tested model downloads

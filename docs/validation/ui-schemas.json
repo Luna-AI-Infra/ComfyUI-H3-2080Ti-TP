@@ -2,6 +2,19 @@
   "scope": "H3 node widget order/count/types/enum values; not browser interaction or full output validation",
   "graphs": [
     {
+      "file": "workflows/ui/ref2va-robot-480p-5s.json",
+      "current_h3_widget_schema_passed": true,
+      "checked_nodes": [
+        "H3TensorParallel",
+        "H3ReferenceToVideoDP",
+        "H3TPVAEDecode",
+        "H3TPLarryLoRA",
+        "H3LoadPipeline",
+        "H3QwenExecution",
+        "H3LoadBenchmarkNonce"
+      ]
+    },
+    {
       "file": "workflows/ui/sky-city-480p-5s.json",
       "current_h3_widget_schema_passed": true,
       "checked_nodes": [
