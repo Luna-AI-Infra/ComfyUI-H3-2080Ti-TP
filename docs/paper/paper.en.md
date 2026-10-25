@@ -161,7 +161,7 @@ The evidence supports useful local and workflow-level optimizations while also s
 | Decoder staging / final-step prefetch | false / false | true / true in paired graph |
 | RAM loader | absent | optional separate launch configuration |
 
-Node inputs and environment variables are separate. Copying a workflow does not reproduce environment-controlled fusion, accumulation or index-plan settings. The conservative launch preset disables additional native paths and selects FP32 VAE FFN accumulation; it is not an all-FP32 quality-reference graph. Joint source-default fusion still requires its library unless explicitly disabled.
+The public launcher now defaults to the performance preset when --config is omitted; build its libraries and use the paired workflows. This deployment choice is not a new performance measurement. Node inputs and process settings are separate. The conservative preset remains an explicit diagnostic option, not an all-FP32 quality reference. Source fallbacks differ from the recommended deployment.
 
 The public launcher disables global TF32/reduced-precision reduction/global FP16 accumulation. The local half-accumulation backend is independent. Pipeline/decode precision and cache-generation settings must match. Final-step decoder donation is validated only for the eligible Euler, zero-final-sigma, single-condition configuration.
 

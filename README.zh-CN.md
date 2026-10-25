@@ -8,6 +8,8 @@
 
 本项目基于 [Comfy-H3-MultiStream](https://github.com/martonsagi/Comfy-H3-MultiStream) 扩展，实验平台是 **Supermicro X9DAi、双路 Xeon E5-2620 v2、256 GB DDR3、双 RTX 2080 Ti 22 GB 和 NVLink**。不需要显卡算力解锁，也不需要修改 ComfyUI 核心。
 
+**默认以速度优先：** 启动器省略 `--config` 时自动选择 `configs/performance.json`，配合附带的性能工作流使用。先构建所需内核，再开启调优 FC2、joint SwiGLU、shared-KV/offset 和 VAE FFN 局部 FP16 累加。RAM 预载单独按需开启；曾失败的主干内部 FP16 输出和 FP16 LoRA 增量不纳入推荐组合。
+
 ## 项目特点与新增优化
 
 - **H3 主干 TP2**：INT8 ConvRot 线性层、事件驱动的双卡 P2P、分块激活通信、分组双缓冲权重流式执行。
@@ -23,15 +25,17 @@
 
 以下均为 864×480、24fps、Larry v4 step600 EMA、Euler/simple 8步、INT8 ConvRot H3。不同任务和缓存条件分列，**不是同一基线上的累计加速比**。
 
-| 实验 | 输出 | 任务与缓存状态 | 完整请求耗时 |
-|---|---|---|---:|
-| E52 | 5秒 / 120帧 | FL2VA，组合配置热跑 | **110.617秒** |
-| E60 | 5秒 / 120帧 | FL2VA纯文生，切换长度后的热回切 | **123.774秒** |
-| E60 | 10秒 / 240帧 | FL2VA纯文生，canonical CPU缓存命中 | **235.156秒** |
-| E57 | 15秒 / 360帧 | FL2VA首尾帧条件，RAM预载后的首次请求 | **501.450秒** |
-| E75 | 5秒 / 120帧 | Ref2VA双参考，未解锁系统冷请求 | **223.048秒** |
+| 实验 | 输出 | 任务与缓存状态 | 完整请求耗时 | 有效生成帧率 |
+|---|---|---|---:|---:|
+| E52 | 5秒 / 120帧 | FL2VA，组合配置热跑 | **110.617秒** | **1.085 fps** |
+| E60 | 5秒 / 120帧 | FL2VA纯文生，RAM已预载，切换长度后的热回切 | **123.774秒** | **0.970 fps** |
+| E60 | 10秒 / 240帧 | FL2VA纯文生，RAM已预载，canonical CPU缓存命中 | **235.156秒** | **1.021 fps** |
+| E57 | 15秒 / 360帧 | FL2VA首尾帧条件，RAM预载后的首次请求 | **501.450秒** | **0.718 fps** |
+| E75 | 5秒 / 120帧 | Ref2VA双参考，RAM已预载，未解锁系统冷请求 | **223.048秒** | **0.538 fps** |
 
 耗时定义为 ComfyUI `execution_start → execution_success`，含条件编码、采样、VAE、封装保存，不含排队、服务启动和权重预载。多数为单次观测。E52 配对组合对照为 **115.734→110.617秒，1.046倍**，其中包含影响精度的选项，不能称无损加速。详见[实验结果与限制](docs/RESULTS.md)。
+
+有效生成帧率＝保存帧数÷完整请求耗时，不是播放帧率或仅采样阶段的吞吐。关注速度时，**E60 的短队列证据最完整：5秒冷跑→10秒→5秒连续三次成功**，跨长度复用缓存；E52 是这里记录的最快成功 5 秒热跑，E57/E75 是单次成功记录。它们都不能证明长期无人值守队列稳定。[推荐配置、具体开关与稳定性证据](docs/SPEED.md)。
 
 ![CPU缓存与阶段耗时](docs/figures/e60-stage-times.png)
 
@@ -56,6 +60,9 @@ python -m pip install -r ComfyUI-GGUF/requirements.txt
 cd ComfyUI-H3-TP
 # 使用运行 ComfyUI 的 Python 环境。
 python scripts/bootstrap_backends.py
+git clone https://github.com/NVIDIA/cutlass.git third_party/cutlass
+git -C third_party/cutlass checkout df18f5e4f5de76bed8be1de8e4c245f2f5ec3020
+python scripts/build_kernels.py --cutlass-include third_party/cutlass/include
 python scripts/doctor.py --comfyui ../..
 ```
 
@@ -66,12 +73,12 @@ python scripts/doctor.py --comfyui ../..
 ```bash
 # 文生视频/首尾帧任务；参考任务改用 --task ref2va。
 python scripts/verify_models.py --comfyui ../.. --task fl2va
-python scripts/launch_comfyui.py --comfyui ../.. --config configs/conservative.json -- --port 8189
+python scripts/launch_comfyui.py --comfyui ../.. -- --port 8189
 # 另开终端，使用同一 Python，并进入本插件目录：
 python scripts/run_workflow.py --url http://127.0.0.1:8189 --workflow workflows/api/t2va-480p-5s.json
 ```
 
-权重校验会读取约 55 GiB，缺失或哈希不匹配均会失败。工作流检查不会提交视频。示例图即使使用保守启动配置也需要 Sparse Kitchen；保守配置仅关闭额外的自定义性能内核。启用 `configs/performance.json` 前按[安装说明](docs/INSTALL.md)构建对应库。节点注册成功不能代替后端动态库加载及实际执行验证。
+权重校验会读取约 55 GiB，缺失或哈希不匹配均会失败。工作流检查不会提交视频。默认性能配置需要先构建上述内核，构建使用 CUDA 12.8 的 `nvcc`，不在 PATH 时用 `--nvcc` 指定路径。`--config configs/conservative.json` 留作显式排查选项，不是推荐速度档；还需要对应调整图里的融合和后端设置。详细步骤见[安装说明](docs/INSTALL.md)。节点注册成功不能代替后端动态库加载及实际执行验证。
 
 典型接线：
 
@@ -102,7 +109,7 @@ FL2VA与Ref2VA对应不同任务；权重存储精度、计算精度和累加精
 
 ## 默认值与质量取舍
 
-**源码默认、保守启动配置、性能启动配置不是同一组设置。** 源码默认沿用 Sage、chunk2048、三组两槽、VAE FFN FP32累加、joint SwiGLU；joint 需要构建对应库。保守配置显式关闭融合与额外库优化，不等于全 FP32 或画质参考模式。
+**推荐默认入口是性能启动器加附带工作流。** 手动新建节点或直接运行 `main.py` 时，源码回退值仍是 Sage、chunk2048、三组两槽、VAE FFN FP32累加及 joint SwiGLU，并不会自动复现推荐速度配置。保守启动配置仅作为显式排查选项，不等于全 FP32 画质参考模式。
 
 性能配置采用 Kitchen50、chunk4096、配套API图中的 canonical packed缓存、调优FC2、joint融合、offset路由及 VAE FFN 局部FP16累加。主干内部输出仍为 `original`，运行时 LoRA 增量仍为 FP32。完整默认值、作用位置和关闭方式见[开关表](docs/SETTINGS.md)。
 

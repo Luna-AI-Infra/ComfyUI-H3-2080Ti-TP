@@ -1,10 +1,12 @@
 # Performance, precision and default settings
 
-中文要点：工作流默认值、源码环境默认值、两个启动配置要分别看。`conservative.json`主要减少额外内核依赖，不是全FP32画质对照；`performance.json`复用实验速度配置，其中Kitchen稀疏、局部FP16累加、FP16 VAE和蒸馏8步均有质量取舍。修改环境设置后重启服务，修改缓存外部权重后增加generation。
+**Recommended default:** `scripts/launch_comfyui.py --comfyui PATH` selects `configs/performance.json` without `--config`. Build its native dependencies and pair it with the supplied performance workflows. [Speed profiles, output fps and success evidence](SPEED.md).
+
+中文要点：默认启动入口以速度优先，省略config自动加载performance；工作流参数、手动新建节点的源码回退值和进程配置仍需分别理解。`conservative.json`主要减少额外内核依赖，留作显式排查选项，不是全FP32画质对照；`performance.json`复用实验速度配置，其中Kitchen稀疏、局部FP16累加、FP16 VAE和蒸馏8步均有质量取舍。修改环境设置后重启服务，修改缓存外部权重后增加generation。
 
 ## Main switches
 
-| Setting / location | Code default | Performance example | Effect and rollback |
+| Setting / location | Source fallback | Recommended performance deployment | Effect and rollback |
 |---|---|---|---|
 | TP attention node | `sage_turing_int8` | `sparse_kitchen_int8` | Changes backend/quantization. Choose Sage/Flash/PyTorch explicitly for comparison; no automatic quality equivalence. |
 | `sparse_video_keep` / TP node | 0.5, Kitchen only | 0.5 | Retain half target-video KV tiles; conditioning dense. Set 1.0 for a dense-routing control within Kitchen, not to undo all quantization/backend changes. |
@@ -39,7 +41,7 @@ The portable launcher disables global TF32, FP16 reduced-precision reduction and
 ## Presets
 
 - `configs/conservative.json`: vendor FC2, fusion off, Kitchen plan baseline/shared-KV off, local VAE FFN FP32 accumulation, main internal output original. Change the graph's attention/precision options explicitly if you need a different quality control.
-- `configs/performance.json`: the explicit environment portion of the performance experiments. Use matching `workflows/api` for graph settings. Does not enable RAM preload.
+- `configs/performance.json`: **launcher default when `--config` is omitted**, containing the explicit environment portion of the performance experiments. Use matching `workflows/api` for graph settings. Does not enable RAM preload. The file is resolved from the installed plugin, not from the working directory.
 - `configs/performance-ram-ref2va.json`: performance settings plus the five Ref2VA weights. Requires Linux memlock capacity and substantial spare RAM. Original E75 used the same math, but the public launcher itself has not yet completed an E75-sized end-to-end rerun.
 
 ## Measured precision effects

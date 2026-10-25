@@ -46,10 +46,10 @@ Select `--task ref2va` for reference tasks. The tool requires all five assets fo
 Check whether the intended port is already in use. To create an isolated test server without changing other instances:
 
 ```bash
-python scripts/launch_comfyui.py --comfyui ../.. --config configs/conservative.json -- --port 8189
+python scripts/launch_comfyui.py --comfyui ../.. -- --port 8189
 ```
 
-Use `configs/performance.json` only after corresponding backends/libraries are ready. For the exact graph-side performance settings use the API examples. Source defaults and process presets differ. RAM preload is optional and requires additional host memory/memlock capacity; no privilege elevation is performed by this launcher.
+The default is `configs/performance.json`; prepare its backends/libraries before this step. For the exact graph-side performance settings use the API examples. Source fallbacks and process presets differ. Select `--config configs/conservative.json` explicitly for troubleshooting and change graph-side fusion/backend choices accordingly. RAM preload is optional and requires additional host memory/memlock capacity; no privilege elevation is performed by this launcher. See [speed profiles and historical success evidence](SPEED.md); do not describe the default as a newly measured or long-queue-stable result.
 
 **Success condition:** startup log has no import failures, `/object_info` contains the graph's H3 and GGUF nodes, `/queue` is reachable. Do not mistake node registration for kernel execution.
 

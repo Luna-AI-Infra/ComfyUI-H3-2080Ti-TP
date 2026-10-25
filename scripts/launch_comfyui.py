@@ -10,7 +10,9 @@ import sys
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--comfyui', required=True, type=Path)
-    ap.add_argument('--config', required=True, type=Path)
+    ap.add_argument('--config', type=Path,
+                    default=Path(__file__).resolve().parents[1] / 'configs/performance.json',
+                    help='Launch preset (default: bundled configs/performance.json; build kernels first)')
     args, remaining = ap.parse_known_args()
     if remaining[:1] == ['--']:
         remaining = remaining[1:]

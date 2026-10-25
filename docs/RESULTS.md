@@ -2,6 +2,8 @@
 
 This is an engineering measurement record, not a peer-reviewed benchmark or a claim of lossless inference. Full discussion is in the [English paper](paper/H3-TP-Experiments.en.pdf) and [中文论文](paper/H3-TP-Experiments.zh-CN.pdf). Selected sanitized historical reports are in [experiments](experiments/).
 
+For deployment choices, see [the speed-first default, effective fps and success/stability evidence](SPEED.md). The launcher now defaults to `configs/performance.json`; this changes preset selection, not the historical measurements below.
+
 ## Measurement contract
 
 Complete request latency means ComfyUI history `execution_start → execution_success`: conditioning/model preparation/sampling/VAEs/frame processing/encoding/saving, excluding queueing, process startup and RAM preload. A failed request has **no successful latency**. Cold first-request packing, warm cache reuse and profiler captures are separate categories. Inner scopes belong to outer scopes and must not be added twice. Event spans may include waits and are not kernel-active time.

@@ -8,6 +8,8 @@ For an installation agent: follow [the step-by-step setup and success checks](do
 
 This experimental custom-node pack builds on [Comfy-H3-MultiStream](https://github.com/martonsagi/Comfy-H3-MultiStream). Its development target is a Supermicro X9DAi with **2 × Xeon E5-2620 v2, 256 GB DDR3, and 2 × RTX 2080 Ti 22 GB connected by NVLink**. It does not require a GPU unlock or a modified ComfyUI core.
 
+**Speed-first by default:** the launcher selects `configs/performance.json` when `--config` is omitted. Pair it with the bundled performance workflows after building the required kernels. This enables tuned FC2, joint SwiGLU, shared-KV/offset routing and local FP16 VAE FFN accumulation. RAM preload stays opt-in. Failed internal-FP16-output and FP16-LoRA candidates are excluded.
+
 ## What this project adds
 
 - **TP2 for the H3 transformer:** INT8 ConvRot linear layers, direct event-driven GPU-to-GPU exchange, chunked activation communication, and grouped double-buffered weight streaming.
@@ -23,15 +25,17 @@ The TP2 path is distinct from the inherited general MultiStream path. This fork'
 
 All rows use 864 × 480, 24 fps, Larry v4 step600 EMA, 8 Euler/simple steps and INT8 ConvRot H3. These are different runs/configurations, **not one cumulative speedup comparison**.
 
-| Experiment | Output | Cache / task | Complete request time |
-|---|---|---|---:|
-| E52 | 5 s / 120 frames | FL2VA, warm combined configuration | **110.617 s** |
-| E60 | 5 s / 120 frames | FL2VA text-only, warm return after a length change | **123.774 s** |
-| E60 | 10 s / 240 frames | FL2VA text-only, canonical CPU cache hit | **235.156 s** |
-| E57 | 15 s / 360 frames | FL2VA first/last-frame conditioning, first request after RAM preload | **501.450 s** |
-| E75 | 5 s / 120 frames | Ref2VA, two references, cold request, stock GPU state | **223.048 s** |
+| Experiment | Output | Cache / task | Complete request time | Effective output fps |
+|---|---|---|---:|---:|
+| E52 | 5 s / 120 frames | FL2VA, warm combined configuration | **110.617 s** | **1.085** |
+| E60 | 5 s / 120 frames | FL2VA text-only, RAM-preloaded, warm return after a length change | **123.774 s** | **0.970** |
+| E60 | 10 s / 240 frames | FL2VA text-only, RAM-preloaded, canonical CPU cache hit | **235.156 s** | **1.021** |
+| E57 | 15 s / 360 frames | FL2VA first/last-frame conditioning, first request after RAM preload | **501.450 s** | **0.718** |
+| E75 | 5 s / 120 frames | Ref2VA, two references, RAM-preloaded, cold request, stock GPUs | **223.048 s** | **0.538** |
 
 Request time is ComfyUI `execution_start → execution_success`, including conditioning, sampling, VAE and video saving, excluding queueing/server startup/weight preload. Most rows are single observations. The matched E52 comparison was **115.734 → 110.617 s (1.046×)**; precision-changing options were part of that combination. See [results and limitations](docs/RESULTS.md).
+
+Effective fps is saved frames divided by complete request time, not playback fps or sampling-only throughput. For speed-oriented use, **E60 provides the strongest short-sequence evidence: 5 s cold → 10 s → 5 s all succeeded**, with cache reuse across length changes. E52 is the fastest recorded successful warm 5-second run here; E57/E75 are successful individual requests. None establishes long unattended queue stability. [Which profile to use, exact settings and stability evidence](docs/SPEED.md).
 
 ![Canonical CPU cache and stage times](docs/figures/e60-stage-times.png)
 
@@ -56,6 +60,9 @@ python -m pip install -r ComfyUI-GGUF/requirements.txt
 cd ComfyUI-H3-TP
 # Use the Python environment that runs ComfyUI.
 python scripts/bootstrap_backends.py
+git clone https://github.com/NVIDIA/cutlass.git third_party/cutlass
+git -C third_party/cutlass checkout df18f5e4f5de76bed8be1de8e4c245f2f5ec3020
+python scripts/build_kernels.py --cutlass-include third_party/cutlass/include
 python scripts/doctor.py --comfyui ../..
 ```
 
@@ -66,12 +73,12 @@ Place the exact model variants from [the model manifest and download links](docs
 ```bash
 # Text-only / first-last-frame example; use --task ref2va for reference tasks.
 python scripts/verify_models.py --comfyui ../.. --task fl2va
-python scripts/launch_comfyui.py --comfyui ../.. --config configs/conservative.json -- --port 8189
+python scripts/launch_comfyui.py --comfyui ../.. -- --port 8189
 # In another terminal, with the same Python and plugin working directory:
 python scripts/run_workflow.py --url http://127.0.0.1:8189 --workflow workflows/api/t2va-480p-5s.json
 ```
 
-The verifier fails if any required asset is missing or mismatched; it reads about 55 GiB. The workflow check does not submit a video. The conservative preset still needs Sparse Kitchen for these example graphs; it only disables the additional custom performance kernels. Build those kernels before enabling `configs/performance.json`; see [the complete installation guide](docs/INSTALL.md). Node registration alone does not validate backend library loading or GPU execution.
+The verifier fails if any required asset is missing or mismatched; it reads about 55 GiB. The workflow check does not submit a video. The default performance preset requires the native libraries built above; use CUDA 12.8 `nvcc` for that build (select its path with `--nvcc` if needed). `--config configs/conservative.json` is an explicit diagnostic fallback, not the recommended speed profile; graph-side fusion/backend settings must also be adjusted. See [the complete installation guide](docs/INSTALL.md). Node registration alone does not validate backend library loading or GPU execution.
 
 Typical graph:
 
@@ -102,7 +109,7 @@ FL2VA and Ref2VA are alternatives for different tasks. Storage dtype/quantizatio
 
 ## Defaults and quality tradeoffs
 
-**Code defaults, the conservative launch preset, and the performance preset are different.** The source defaults are: Sage attention, chunk 2048, three groups/two slots, FP32 VAE FFN accumulation, and joint SwiGLU enabled. Joint fusion needs its native library. The conservative preset explicitly disables fusion and experimental library-backed paths; it is not an all-FP32 or quality-reference configuration.
+**The recommended default is the performance launcher plus the bundled workflows.** Source fallbacks for manually created nodes or direct `main.py` startup are different: Sage attention, chunk 2048, three groups/two slots, FP32 VAE FFN accumulation, and joint SwiGLU enabled. They do not automatically reproduce the advertised speed profile. The conservative preset is an explicit troubleshooting option, not an all-FP32 quality reference.
 
 The performance preset selects Kitchen 50%, chunk 4096, canonical packed caching in the paired API graph, tuned FC2, joint fusion, offset routing, and local FP16 VAE FFN accumulation. Main transformer internal output remains `original`, runtime LoRA remains FP32. See [the full defaults/overrides table](docs/SETTINGS.md).
 

@@ -19,7 +19,7 @@ print(urllib.request.urlopen(request).read().decode())
 
 Use your server's configured port. For the robot Ref2VA example, copy the bundled `reference-a.png` and `reference-b.png` into the ComfyUI input directory or upload your own images and update the graph. The older `ref2va-480p-5s.json` retains the historical character prompt: provide suitable inputs and adapt its prompt rather than assuming the robot images match that scene. No private reference image is bundled.
 
-The process preset is separate: launch with `configs/performance.json` for the performance environment, or explicitly choose a conservative graph/backend together with `configs/conservative.json`. Changing only the environment does not change node inputs. Pair pipeline/decode precision and cache generation; do not combine unmatched nodes casually.
+The process preset is separate: `scripts/launch_comfyui.py` defaults to `configs/performance.json` when `--config` is omitted. Build its libraries first. For troubleshooting, explicitly choose a conservative graph/backend together with `--config configs/conservative.json`. Changing only the environment does not change node inputs. Pair pipeline/decode precision and cache generation; do not combine unmatched nodes casually. [Speed and historical validation evidence](../docs/SPEED.md).
 
 Multiple HTTP submissions use the normal serial queue. For different samples, change the actual RandomNoise seed, not just a benchmark nonce. `H3LoadBenchmarkNonce` forces selected benchmark work to execute; it does not choose a new generation seed. A queue smoke test is not a multiple-video reliability guarantee.
 

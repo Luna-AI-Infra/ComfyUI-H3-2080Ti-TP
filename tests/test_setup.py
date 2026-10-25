@@ -22,6 +22,28 @@ def script(name):
 
 
 class SetupTests(unittest.TestCase):
+    def test_default_launch_uses_speed_preset(self):
+        launcher = script('launch_comfyui')
+        config = json.loads((ROOT / 'configs/performance.json').read_text())
+        torch = types.SimpleNamespace(backends=types.SimpleNamespace(
+            cuda=types.SimpleNamespace(matmul=types.SimpleNamespace())))
+        with tempfile.TemporaryDirectory() as folder:
+            (Path(folder) / 'main.py').write_text('# fixture', encoding='utf-8')
+            before = Path.cwd()
+            def check(*args, **kwargs):
+                self.assertEqual(sys.argv, ['main.py'] + config['comfyui_args'] + ['--port', '8189'])
+                for key, value in config['environment'].items():
+                    self.assertEqual(os.environ[key], value)
+                self.assertNotIn('ram_weights', config)
+            try:
+                with patch.dict(sys.modules, {'torch': torch}), patch.dict(os.environ):
+                    with patch.object(sys, 'path', list(sys.path)):
+                        with patch.object(sys, 'argv', ['launcher', '--comfyui', folder, '--', '--port', '8189']):
+                            with patch.object(launcher.runpy, 'run_path', side_effect=check):
+                                launcher.main()
+            finally:
+                os.chdir(before)
+
     def test_missing_task_weights_fail(self):
         verifier = script('verify_models')
         for task in ('fl2va', 'ref2va'):

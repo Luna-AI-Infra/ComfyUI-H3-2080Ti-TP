@@ -38,7 +38,7 @@ This fetches [Zironic/H3-Optimizations](https://github.com/Zironic/H3-Optimizati
 
 If Git's TLS transport fails on the host, `python scripts/bootstrap_backends.py --archive` downloads the same pinned revision as a source archive and records its revision marker. It does not disable HTTPS certificate checks or substitute an unpinned branch. A failed/unknown pre-existing directory is not silently overwritten.
 
-## 3. Build the optional performance kernels
+## 3. Build the kernels required by the default performance preset
 
 Use a CUDA toolkit with SM75 support. CUDA 12.8 was used for the packaged C-ABI libraries; this is distinct from the CUDA 13.0 runtime in the tested PyTorch wheel.
 
@@ -68,10 +68,10 @@ Use [MODELS.md](MODELS.md) and `configs/models.json`. Then:
 
 ```bash
 python scripts/verify_models.py --comfyui ../.. --task fl2va
-python scripts/launch_comfyui.py --comfyui ../.. --config configs/conservative.json
+python scripts/launch_comfyui.py --comfyui ../..
 ```
 
-After kernels/backends are ready, select `configs/performance.json`. The scripts assume they run with the ComfyUI Python environment. Paths above are relative examples, not a required disk layout. The launcher is opt-in; ordinary ComfyUI startup still registers all nodes.
+The launcher defaults to `configs/performance.json`; build the required kernels/backends first. `--config configs/performance.json` is an equivalent explicit selection. For troubleshooting, use `--config configs/conservative.json` and adjust graph-side fusion/backend settings as needed. The scripts assume they run with the ComfyUI Python environment. Paths above are relative examples, not a required disk layout. The launcher is opt-in; ordinary ComfyUI startup still registers all nodes but does not reproduce the full process preset. See [speed profiles and evidence](SPEED.md).
 
 All commands after step 1 run from this plugin directory. Choose `--task ref2va` instead for reference workflows. Verification requires every asset used by the selected bundled example, including its Turbo LoRA, and fails on missing files. Extra model directories configured through ComfyUI YAML are not discovered by this verifier: provide the listed model paths (symlinks are supported). `doctor.py` is informational, not a pass/fail installer. Both bundled API paths select Sparse Kitchen even with the conservative process preset. A functioning Linux ComfyUI installation and its requirements are prerequisites; install its own `requirements.txt` with the selected environment before adding this pack. If the shipped Sparse Kitchen library cannot load, stop and follow its native CMake build instructions (CMake >=3.26, C++20/CUDA and suitable architecture flags); do not expect an automatic first-use build. This is separate from this pack's six optional CUDA 12.8 libraries.
 
