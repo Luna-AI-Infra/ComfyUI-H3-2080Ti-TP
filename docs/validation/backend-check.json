@@ -1,0 +1,8 @@
+{
+  "revision": "c6bc3cfc58c18c3a6220aeea09116e1eebd91669",
+  "pinned_archive_download_passed": true,
+  "public_dependency_import_passed": true,
+  "selected_backend_file_matches_historical_revision": true,
+  "kernel_execution_tested": false,
+  "note": "Source dependency import only. Git transport on the test host failed TLS; the pinned archive path succeeded without disabling certificate verification."
+}

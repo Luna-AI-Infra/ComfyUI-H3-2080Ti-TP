@@ -1,0 +1,38 @@
+[
+  {
+    "name": "fc2_int8",
+    "source": "kernels/fc2_int8/kernel.cu",
+    "source_sha256": "3ca798133fb7c32c1c29dfae9bbef576802bbe416ec72dd2cd95208090dd65b5",
+    "binary_sha256": "ff8ceabd3001409fa4dd69f2cb4fd4c02057930c5e2e6839a3e553be5fac06e6"
+  },
+  {
+    "name": "swiglu",
+    "source": "kernels/swiglu/kernel.cu",
+    "source_sha256": "ae5041281c9772a77e7feeca01383d4b3089aa28275c5576fd670db85fdf53e0",
+    "binary_sha256": "6858e12fa41fde02f227ea6903f2ee2cc5d17f9b2adccacbf17cabb135246c71"
+  },
+  {
+    "name": "kitchen_shared_kv",
+    "source": "kernels/kitchen_shared_kv/launcher.cu",
+    "source_sha256": "7df88bc6d8a46a13742a787f95bb4ebf6f139dfb10d934f5ed6f03acde69aa58",
+    "binary_sha256": "8fa7b650a02a9e747732b24bd59ddaf5810dc1dca48fa4f71a81952262b404f8"
+  },
+  {
+    "name": "kitchen_offsets",
+    "source": "kernels/kitchen_offsets/launcher.cu",
+    "source_sha256": "07c4a1e1716dc32a05928a4332285a81edb96cd89f8a134de3b1eee70d577b96",
+    "binary_sha256": "69b46ecd672b74345595ac62038b9099e128bcb058bf75af3db686e40c963b1a"
+  },
+  {
+    "name": "vae_swiglu",
+    "source": "kernels/vae_swiglu/kernel.cu",
+    "source_sha256": "36434e4128fb96d7f9862f1d54548bf436c5f0c34b6302325f772d56bfd79616",
+    "binary_sha256": "0b93872ed84f63929a27dfebda964ab73c991344a8b6ff57317b6b36924d1376"
+  },
+  {
+    "name": "vae_half",
+    "source": "kernels/vae_half/kernel.cu",
+    "source_sha256": "b66379b09d58eefea625972428c19160a3fa40554d175727e1e2f802e3517446",
+    "binary_sha256": "2055948321f1fc1f11b6e710b21cc2e24608dcd41698d1bee5164a0b99c70762"
+  }
+]

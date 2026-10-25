@@ -1,0 +1,56 @@
+{
+  "e60": [
+    {
+      "label": "5 s | cold",
+      "total": 216.657,
+      "conditioning": 28.178,
+      "sampler": 143.413,
+      "video_vae": 17.506
+    },
+    {
+      "label": "10 s | cache hit",
+      "total": 235.156,
+      "conditioning": 2.85,
+      "sampler": 168.028,
+      "video_vae": 34.563
+    },
+    {
+      "label": "5 s | warm return",
+      "total": 123.774,
+      "conditioning": 2.705,
+      "sampler": 88.144,
+      "video_vae": 16.799
+    }
+  ],
+  "e44": {
+    "baseline_ms": 223.272,
+    "tuned_ms": 220.378,
+    "scope": "Original-output-precision TP2 main block"
+  },
+  "e52": [
+    {
+      "rank": 0,
+      "kind": "transfer",
+      "start_s": -0.012281179428100586,
+      "duration_s": 0.4363252258300781
+    },
+    {
+      "rank": 1,
+      "kind": "transfer",
+      "start_s": -0.002913236618041992,
+      "duration_s": 0.41524453735351563
+    },
+    {
+      "rank": 0,
+      "kind": "compute",
+      "start_s": 0.0,
+      "duration_s": 2.991511962890625
+    },
+    {
+      "rank": 1,
+      "kind": "compute",
+      "start_s": 0.009836673736572266,
+      "duration_s": 2.982549560546875
+    }
+  ]
+}

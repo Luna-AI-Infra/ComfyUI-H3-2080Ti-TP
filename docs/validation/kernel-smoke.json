@@ -1,0 +1,69 @@
+{
+  "scope": "Small local kernel smoke checks; no full-block/VAE/model/quality claim",
+  "cases": [
+    {
+      "rank": 0,
+      "case": "swiglu",
+      "dtype": "torch.float16",
+      "max_abs": 0.0,
+      "passed": true
+    },
+    {
+      "rank": 0,
+      "case": "vae_vector",
+      "passed": true,
+      "max_abs": 0.0
+    },
+    {
+      "rank": 0,
+      "case": "swiglu",
+      "dtype": "torch.float32",
+      "max_abs": 0.0,
+      "passed": true
+    },
+    {
+      "rank": 0,
+      "case": "vae_half",
+      "passed": true,
+      "relative_rmse": 0.00042862709960900247
+    },
+    {
+      "rank": 0,
+      "case": "fc2_int8",
+      "passed": true,
+      "full_int32_equal": true
+    },
+    {
+      "rank": 1,
+      "case": "swiglu",
+      "dtype": "torch.float16",
+      "max_abs": 0.0,
+      "passed": true
+    },
+    {
+      "rank": 1,
+      "case": "vae_vector",
+      "passed": true,
+      "max_abs": 0.0
+    },
+    {
+      "rank": 1,
+      "case": "swiglu",
+      "dtype": "torch.float32",
+      "max_abs": 0.0,
+      "passed": true
+    },
+    {
+      "rank": 1,
+      "case": "vae_half",
+      "passed": true,
+      "relative_rmse": 0.00042862709960900247
+    },
+    {
+      "rank": 1,
+      "case": "fc2_int8",
+      "passed": true,
+      "full_int32_equal": true
+    }
+  ]
+}

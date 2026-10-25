@@ -1,0 +1,14 @@
+[
+  {
+    "file": "H3-TP-Experiments.en.pdf",
+    "pages": 8,
+    "text_bounds_passed": true,
+    "unicode_extraction_passed": true
+  },
+  {
+    "file": "H3-TP-Experiments.zh-CN.pdf",
+    "pages": 8,
+    "text_bounds_passed": true,
+    "unicode_extraction_passed": true
+  }
+]

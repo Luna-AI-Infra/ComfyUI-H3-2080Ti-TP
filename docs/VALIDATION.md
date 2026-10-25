@@ -1,0 +1,21 @@
+# Public export validation
+
+The export starts from historical H3 runtime `4369debd37e4f5a426796417fdcdeb5d2cf0e5c7`. Public code packaging commit `5c2723d` relocates native-library lookup and includes original kernel sources plus portable helpers. Follow-up `de32c57` adds pinned archive bootstrap and optional-backend guidance. Neither is a newly measured complete-generation speedup.
+
+| Check | Result | Evidence |
+|---|---|---|
+| Six native C-ABI libraries | Rebuilt with CUDA12.8 and the tested CUTLASS headers | [Build/source hashes](validation/kernel-builds.json) |
+| Small dual-SM75 kernel smoke | 10 cases passed; tested integer FC2 tensors exactly equal; selected activation outputs equal; local half-accumulation outputs finite | [Kernel checks](validation/kernel-smoke.json) |
+| Pinned Sparse Kitchen source | Archive bootstrap/import passed; selected backend file matches the historical pinned revision | [Backend check](validation/backend-check.json) |
+| Public package node registration | Passed in isolated ComfyUI0.42.0 runtime | [Integration](validation/comfyui-integration.json) |
+| Three public API examples | Native validation passed; reference example validated with supplied local inputs replacing placeholders | [Integration](validation/comfyui-integration.json) |
+| Two UI examples | Current H3 widget order/count/types/enums passed after updating VAE fusion and TP planner fields | [UI schemas](validation/ui-schemas.json) |
+| Serial queue smoke | Three concurrently submitted lightweight control tasks passed, execution intervals nonoverlapping | [Integration](validation/comfyui-integration.json) |
+| Three remuxed example videos | Full video/audio decode;120/240/360 video frames; private container metadata removed | [Media manifest](../examples/media-manifest.json) |
+| Bilingual papers | Eight pages each; rendered/visually reviewed; text bounds and Unicode extraction checked | [PDF checks](validation/pdf-qa.json) |
+
+The first Git transport attempt for the external Sparse Kitchen repository failed TLS on the test host. The pinned archive path succeeded without disabling certificate validation. This is not a GPU failure or a substitution of another backend revision.
+
+These checks do **not** validate a complete render with the relocated public RAM launcher, a fresh-machine installation, every frontend interaction, all optional attention variants, perceptual equivalence, or unattended repeated-heavy-job reliability. The historical end-to-end measurements retain their own code/configuration scopes.
+
+No GPU unlock was enabled. The temporary review server was isolated from production and stopped afterward. This repository ships neither the test machine's paths/SSH helpers nor private raw logs/input references. Public commits use the Luna-AI-Infra GitHub noreply author/committer identity; no private Git history was imported.

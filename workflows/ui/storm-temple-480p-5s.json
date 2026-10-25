@@ -1,0 +1,1101 @@
+{
+  "last_node_id": 37,
+  "last_link_id": 27,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "UNETLoader",
+      "pos": [
+        0,
+        0
+      ],
+      "size": [
+        310,
+        140
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UNETLoader",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": [
+        "minimax_h3_fl2va_int8_convrot.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "MiniMaxH3SigmaShift",
+      "pos": [
+        380,
+        0
+      ],
+      "size": [
+        310,
+        140
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3SigmaShift",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": [
+        12.0,
+        3.0
+      ]
+    },
+    {
+      "id": 3,
+      "type": "H3TensorParallel",
+      "pos": [
+        1160,
+        0
+      ],
+      "size": [
+        370,
+        300
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            7,
+            23
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "H3TensorParallel",
+        "cnr_id": ""
+      },
+      "widgets_values": [
+        1,
+        4.0,
+        "sparse_kitchen_int8",
+        "event_p2p",
+        4096,
+        "auto_tokens",
+        0.5,
+        true,
+        0,
+        3,
+        2,
+        2.0,
+        "canonical"
+      ],
+      "title": "H3 TP2 Sparse Kitchen · keep50% · experimental"
+    },
+    {
+      "id": 4,
+      "type": "CLIPLoaderGGUF",
+      "pos": [
+        0,
+        340
+      ],
+      "size": [
+        310,
+        140
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoaderGGUF",
+        "cnr_id": ""
+      },
+      "widgets_values": [
+        "qwen3vl_32b_minimax_h3-Q4_K_M.gguf",
+        "minimax"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "VAELoader",
+      "pos": [
+        0,
+        570
+      ],
+      "size": [
+        310,
+        140
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            4,
+            15,
+            24
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": [
+        "minimax_h3_video_vae_fp16.safetensors"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "VAELoader",
+      "pos": [
+        0,
+        750
+      ],
+      "size": [
+        310,
+        140
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            17
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": [
+        "minimax_h3_audio_vae_fp32.safetensors"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "MiniMaxH3ImageToVideo",
+      "pos": [
+        380,
+        360
+      ],
+      "size": [
+        420,
+        430
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 3
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            6
+          ]
+        },
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3ImageToVideo",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": [
+        "One breathtaking continuous five-second cinematic aerial shot revealing a colossal ancient ring-shaped temple city suspended above a volcanic ocean. Monumental sunlit Greek marble architecture, bronze domes, immense colonnades, tiered hanging gardens and soaring aqueducts curve around an enormous open central sky. Waterfalls spill from the floating rock foundations into turquoise waves far below, where distant volcanic islands glow with thin rivers of lava. A dark storm wall parts around the city; golden shafts of sunlight illuminate white marble and copper roofs against deep blue clouds. Photorealistic historical fantasy, majestic scale, coherent intricate architecture, dramatic atmospheric depth, richly detailed stonework, warm highlights and cool shadows.\nThe camera follows a swift eagle-like flight, but no eagle or wings appear. One unbroken smooth shot with strong foreground parallax. During the first one and a half seconds, fly close beside a towering wet marble cliff and sweep through wisps of storm cloud, with columns passing near the lens. During the next one and a half seconds, bank right through a colossal open arch and curve around its bronze crown, revealing layered terraces and waterfalls. During the final two seconds, rise rapidly and pull backward into a vast panoramic view of the complete floating circular metropolis, the central opening, ocean and volcanic islands. The city recedes continuously as the view expands. Stable physically consistent perspective, fluid curved flight, cinematic motion blur, crisp architectural detail. A spectacular grand wide vista at the end. Deep wind, distant thunder and rushing waterfalls, no speech, no subtitles, no text, no logo, no cuts, no game HUD.",
+        864,
+        480,
+        124
+      ]
+    },
+    {
+      "id": 8,
+      "type": "RandomNoise",
+      "pos": [
+        1550,
+        0
+      ],
+      "size": [
+        310,
+        140
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "NOISE",
+          "type": "NOISE",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RandomNoise",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": [
+        231024,
+        "fixed"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "BasicGuider",
+      "pos": [
+        1550,
+        210
+      ],
+      "size": [
+        310,
+        140
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 5
+        },
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "GUIDER",
+          "type": "GUIDER",
+          "links": [
+            9
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BasicGuider",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 10,
+      "type": "KSamplerSelect",
+      "pos": [
+        1550,
+        380
+      ],
+      "size": [
+        310,
+        140
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "SAMPLER",
+          "type": "SAMPLER",
+          "links": [
+            10,
+            26
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerSelect",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": [
+        "euler"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "BasicScheduler",
+      "pos": [
+        1550,
+        550
+      ],
+      "size": [
+        310,
+        164
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SIGMAS",
+          "type": "SIGMAS",
+          "links": [
+            11,
+            25
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BasicScheduler",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": [
+        "simple",
+        8,
+        1.0
+      ]
+    },
+    {
+      "id": 12,
+      "type": "SamplerCustomAdvanced",
+      "pos": [
+        1920,
+        170
+      ],
+      "size": [
+        310,
+        140
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "noise",
+          "type": "NOISE",
+          "link": 8
+        },
+        {
+          "name": "guider",
+          "type": "GUIDER",
+          "link": 9
+        },
+        {
+          "name": "sampler",
+          "type": "SAMPLER",
+          "link": 10
+        },
+        {
+          "name": "sigmas",
+          "type": "SIGMAS",
+          "link": 11
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "LATENT",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "denoised_output",
+          "type": "LATENT",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SamplerCustomAdvanced",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 13,
+      "type": "LTXVSeparateAVLatent",
+      "pos": [
+        2260,
+        170
+      ],
+      "size": [
+        310,
+        140
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "av_latent",
+          "type": "LATENT",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video_latent",
+          "type": "LATENT",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "audio_latent",
+          "type": "LATENT",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LTXVSeparateAVLatent",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 14,
+      "type": "H3TPVAEDecode",
+      "pos": [
+        2600,
+        0
+      ],
+      "size": [
+        370,
+        160
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 14
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            18
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "H3TPVAEDecode"
+      },
+      "widgets_values": [
+        "tp2_fp16",
+        "vector",
+        true,
+        0
+      ],
+      "title": "H3 VAE TP2 | FP16 linears + FP32 attention/FC1"
+    },
+    {
+      "id": 15,
+      "type": "VAEDecodeAudio",
+      "pos": [
+        2600,
+        230
+      ],
+      "size": [
+        310,
+        140
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 16
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            19
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecodeAudio",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 18,
+      "type": "CreateVideo",
+      "pos": [
+        2940,
+        560
+      ],
+      "size": [
+        310,
+        140
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 18
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            21
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CreateVideo",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": [
+        24.0
+      ]
+    },
+    {
+      "id": 19,
+      "type": "SaveVideo",
+      "pos": [
+        3680,
+        560
+      ],
+      "size": [
+        310,
+        164
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveVideo",
+        "cnr_id": "comfy-core"
+      },
+      "widgets_values": [
+        "E37_StormTemple_480p",
+        "auto",
+        "auto"
+      ]
+    },
+    {
+      "id": 20,
+      "type": "Video Slice",
+      "pos": [
+        3290,
+        560
+      ],
+      "size": [
+        310,
+        180
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Video Slice"
+      },
+      "widgets_values": [
+        0.0,
+        5.0,
+        true
+      ]
+    },
+    {
+      "id": 21,
+      "type": "H3TPLarryLoRA",
+      "pos": [
+        760,
+        0
+      ],
+      "size": [
+        370,
+        240
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            22
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "H3TPLarryLoRA"
+      },
+      "widgets_values": [
+        "minimax_h3_turbo_v4_step600_ema.safetensors",
+        true,
+        1.0,
+        "fp32"
+      ],
+      "title": "Larry v4 EMA | runtime LoRA | enabled / precision switches"
+    },
+    {
+      "id": 36,
+      "type": "H3LoadPipeline",
+      "pos": [
+        720,
+        720
+      ],
+      "size": [
+        390,
+        250
+      ],
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 23
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 24
+        },
+        {
+          "name": "sigmas",
+          "type": "SIGMAS",
+          "link": 25
+        },
+        {
+          "name": "sampler",
+          "type": "SAMPLER",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            5
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "H3LoadPipeline"
+      },
+      "widgets_values": [
+        true,
+        true,
+        "tp2_fp16",
+        0
+      ],
+      "title": "E35 CPU cache + VAE final-step prefetch"
+    },
+    {
+      "id": 37,
+      "type": "H3QwenExecution",
+      "pos": [
+        360,
+        -260
+      ],
+      "size": [
+        370,
+        200
+      ],
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 27
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            3
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "H3QwenExecution"
+      },
+      "widgets_values": [
+        "stream_tp2",
+        0,
+        false
+      ],
+      "title": "E36 Qwen: CPU masters + streaming TP2 (opt-in)"
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "MODEL"
+    ],
+    [
+      2,
+      2,
+      0,
+      21,
+      0,
+      "MODEL"
+    ],
+    [
+      3,
+      37,
+      0,
+      7,
+      0,
+      "CLIP"
+    ],
+    [
+      4,
+      5,
+      0,
+      7,
+      1,
+      "VAE"
+    ],
+    [
+      5,
+      36,
+      0,
+      9,
+      0,
+      "MODEL"
+    ],
+    [
+      6,
+      7,
+      0,
+      9,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      7,
+      3,
+      0,
+      11,
+      0,
+      "MODEL"
+    ],
+    [
+      8,
+      8,
+      0,
+      12,
+      0,
+      "NOISE"
+    ],
+    [
+      9,
+      9,
+      0,
+      12,
+      1,
+      "GUIDER"
+    ],
+    [
+      10,
+      10,
+      0,
+      12,
+      2,
+      "SAMPLER"
+    ],
+    [
+      11,
+      11,
+      0,
+      12,
+      3,
+      "SIGMAS"
+    ],
+    [
+      12,
+      7,
+      1,
+      12,
+      4,
+      "LATENT"
+    ],
+    [
+      13,
+      12,
+      0,
+      13,
+      0,
+      "LATENT"
+    ],
+    [
+      14,
+      13,
+      0,
+      14,
+      0,
+      "LATENT"
+    ],
+    [
+      15,
+      5,
+      0,
+      14,
+      1,
+      "VAE"
+    ],
+    [
+      16,
+      13,
+      1,
+      15,
+      0,
+      "LATENT"
+    ],
+    [
+      17,
+      6,
+      0,
+      15,
+      1,
+      "VAE"
+    ],
+    [
+      18,
+      14,
+      0,
+      18,
+      0,
+      "IMAGE"
+    ],
+    [
+      19,
+      15,
+      0,
+      18,
+      1,
+      "AUDIO"
+    ],
+    [
+      20,
+      20,
+      0,
+      19,
+      0,
+      "VIDEO"
+    ],
+    [
+      21,
+      18,
+      0,
+      20,
+      0,
+      "VIDEO"
+    ],
+    [
+      22,
+      21,
+      0,
+      3,
+      0,
+      "MODEL"
+    ],
+    [
+      23,
+      3,
+      0,
+      36,
+      0,
+      "MODEL"
+    ],
+    [
+      24,
+      5,
+      0,
+      36,
+      1,
+      "VAE"
+    ],
+    [
+      25,
+      11,
+      0,
+      36,
+      2,
+      "SIGMAS"
+    ],
+    [
+      26,
+      10,
+      0,
+      36,
+      3,
+      "SAMPLER"
+    ],
+    [
+      27,
+      4,
+      0,
+      37,
+      0,
+      "CLIP"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "version": 0.4
+}

@@ -1,0 +1,33 @@
+{
+  "environment": {
+    "H3_TP_INTERNAL_OUTPUT": "original",
+    "H3_TP_DIAGNOSTIC_SYNC": "0",
+    "H3_TP_FC2_GEMM": "sm75_tuned",
+    "H3_TP_SWIGLU_FUSION": "joint",
+    "H3_KITCHEN_SHARED_KV": "1",
+    "H3_KITCHEN_KERNEL_PLAN": "offset",
+    "H3_VAE_FFN_ACCUM": "fp16"
+  },
+  "comfyui_args": [
+    "--preview-method",
+    "none",
+    "--reserve-vram",
+    "15",
+    "--disable-dynamic-vram",
+    "--disable-cuda-malloc",
+    "--fp32-unet",
+    "--fp32-text-enc",
+    "--fp32-vae",
+    "--use-pytorch-cross-attention"
+  ],
+  "ram_weights": {
+    "paths": [
+      "models/diffusion_models/minimax_h3_ref2va_int8_convrot.safetensors",
+      "models/vae/minimax_h3_audio_vae_fp32.safetensors",
+      "models/vae/minimax_h3_video_vae_fp16.safetensors",
+      "models/text_encoders/qwen3vl_32b_minimax_h3-Q4_K_M.gguf",
+      "models/loras/minimax_h3_turbo_v4_step600_ema.safetensors"
+    ],
+    "report": "h3-ram-report.json"
+  }
+}

@@ -1,0 +1,86 @@
+[
+  {
+    "experiment": "E39",
+    "source_report_sha256": "488fa13865e4d0d9652624966649c3055ac8c111a792d9ef75056b35f289f659",
+    "public_report": "docs/experiments/E39.md",
+    "public_sha256": "9abc1bcf7cc82df65e66e0758f169682871c5a0799fc9e9e3551e00dd61fb7f6"
+  },
+  {
+    "experiment": "E44",
+    "source_report_sha256": "84498e3c6d65d59ff8a89891786f3f761e994d899af94449e37cee1971c3d25a",
+    "public_report": "docs/experiments/E44.md",
+    "public_sha256": "0596bd3b76c75a266b34127fae19e7b2c68ccddcd43c7816651e2d1d8643ee8d"
+  },
+  {
+    "experiment": "E45",
+    "source_report_sha256": "3b19bf22487ca1bd0c698d4ce22320c3765d1429137abf9490c12b19d48c5629",
+    "public_report": "docs/experiments/E45.md",
+    "public_sha256": "015615ae2017c55c18b43906047f6b62730d0a5071d321796ed895ecafad7bf4"
+  },
+  {
+    "experiment": "E48",
+    "source_report_sha256": "d9c7aae9dc4d14187a6dd151d61d736f6bc99591cb37d75a8c767f84884f2b01",
+    "public_report": "docs/experiments/E48.md",
+    "public_sha256": "ab96cdddad99312e51483c11f7ad20b2434b0d5d35827b5789459067c416a38c"
+  },
+  {
+    "experiment": "E49",
+    "source_report_sha256": "617c877fec59c741fb664df36483cc90f19a88ddefa4d795928a7b1253ce433d",
+    "public_report": "docs/experiments/E49.md",
+    "public_sha256": "4416b9a7ea4a357dacac9907d69013ae7bdf33aa1f4be00c2e50ad2d985f26b2"
+  },
+  {
+    "experiment": "E51",
+    "source_report_sha256": "b85e87bcc5b0aeeaef9d2054342883abe8a3df9b803dec703e5977af34b38c2a",
+    "public_report": "docs/experiments/E51.md",
+    "public_sha256": "14a8d5dd489f7d885a7a82a91fb9ef34c98c252322313657edf836bdaa1db5b9"
+  },
+  {
+    "experiment": "E52",
+    "source_report_sha256": "84f91d5dd9842219af6a3c477643811ef43975e0c30d53e0cd8e2da19eebd932",
+    "public_report": "docs/experiments/E52.md",
+    "public_sha256": "f0de055f7f0b4791ffc18cb8eb9a4b628f72ed3449309752d2990182b60070cf"
+  },
+  {
+    "experiment": "E54",
+    "source_report_sha256": "4ffc861ed7b51fd5ed798d3a44e4f0b3b4871d6e59d72cd0b7f53797bef0d134",
+    "public_report": "docs/experiments/E54.md",
+    "public_sha256": "3f6870a490a947105428cc526498a91d933724a605d4f88f2ba439671b8e016e"
+  },
+  {
+    "experiment": "E57",
+    "source_report_sha256": "5c5be5f73435227fe82eaeb18d7c9d730d68b533b18b594137f76e3b176780f4",
+    "public_report": "docs/experiments/E57.md",
+    "public_sha256": "fb1904ba1aad776e39f11a8f1c53a52aaaac3377427284852197c9e03109fac4"
+  },
+  {
+    "experiment": "E60",
+    "source_report_sha256": "af66e08c2ec6597fe8302e3bf57646dcca4f347056a924df01a06a082664f09a",
+    "public_report": "docs/experiments/E60.md",
+    "public_sha256": "3f0fb89ce802b49aa0c6842d6f9fd17a151b997778de43e317b6c6878a02368d"
+  },
+  {
+    "experiment": "E61",
+    "source_report_sha256": "cd38d0ec8394b94bc00c78f2e6b91f24241e9fb5edd90e66641dbcd4a495872e",
+    "public_report": "docs/experiments/E61.md",
+    "public_sha256": "aaad390d4333464e23bba93ecf06312bbabcdbb0e3da91410eb07e71145f58b4"
+  },
+  {
+    "experiment": "E64",
+    "source_report_sha256": "7b2c2cd23bf1d2fc60c834ddc53b73fcdbd5d21fa9a21717ef72bb84f3e72d57",
+    "public_report": "docs/experiments/E64.md",
+    "public_sha256": "f169f8289d7d2fb6afbd3862dd8eb00a19991c7cb9bc68a8549bebc78d5e2a4a"
+  },
+  {
+    "experiment": "E65",
+    "source_report_sha256": "46d6c3cc96874a6dfc4f2c8b6d60ff44cff27cc16b393ff8956938ef7eef759d",
+    "public_report": "docs/experiments/E65.md",
+    "public_sha256": "91360973386982e072f68416abea489f9a3be5de5af024c0485c8f9d0055dee6"
+  },
+  {
+    "experiment": "E75",
+    "source_report_sha256": "469f9fd3a7b338dfc9c32c14cd33a5201d6b3ec7f984ba52094a4dff5397a2a2",
+    "public_report": "docs/experiments/E75.md",
+    "public_sha256": "6c159e467a3face2cb802a5e9b26c2c455b03a34e142ed48e1b5c057f804284c"
+  }
+]

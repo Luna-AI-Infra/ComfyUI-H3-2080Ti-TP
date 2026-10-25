@@ -1,0 +1,38 @@
+[
+  {
+    "file": "examples/videos/e52-480p-5s.mp4",
+    "sha256": "172f0892c504ce70ea9b0b308e222fe66f320bda7835d9496f55659abb23c1ff",
+    "bytes": 3949341,
+    "decoded_video_frames": 120,
+    "decoded_audio_frames": 157,
+    "width": 864,
+    "height": 480,
+    "fps": "24/1",
+    "full_decode_passed": true,
+    "private_container_metadata_removed": true
+  },
+  {
+    "file": "examples/videos/e57-480p-15s.mp4",
+    "sha256": "5404bf46fc8a7815c253b3166d699e9dd1aeebb38706c29ce864eba5460a84c0",
+    "bytes": 7108050,
+    "decoded_video_frames": 360,
+    "decoded_audio_frames": 469,
+    "width": 864,
+    "height": 480,
+    "fps": "24/1",
+    "full_decode_passed": true,
+    "private_container_metadata_removed": true
+  },
+  {
+    "file": "examples/videos/e60-480p-10s.mp4",
+    "sha256": "fae60dbc43f6549f9ec97269279996f3a1e102a854317a15c46ec98a8797cf6f",
+    "bytes": 9773667,
+    "decoded_video_frames": 240,
+    "decoded_audio_frames": 313,
+    "width": 864,
+    "height": 480,
+    "fps": "24/1",
+    "full_decode_passed": true,
+    "private_container_metadata_removed": true
+  }
+]

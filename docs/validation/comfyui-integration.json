@@ -1,0 +1,43 @@
+{
+  "scope": "Public export ComfyUI registration, API validation and lightweight serial queue; no model generation",
+  "public_module_registered": true,
+  "api_graphs": [
+    {
+      "file": "workflows/api/ref2va-480p-5s.json",
+      "valid": true,
+      "user_reference_inputs_supplied_for_validation": true
+    },
+    {
+      "file": "workflows/api/t2va-480p-10s.json",
+      "valid": true,
+      "user_reference_inputs_supplied_for_validation": false
+    },
+    {
+      "file": "workflows/api/t2va-480p-5s.json",
+      "valid": true,
+      "user_reference_inputs_supplied_for_validation": false
+    }
+  ],
+  "lightweight_queue": {
+    "successful": 3,
+    "serial_nonoverlapping": true,
+    "relative_timeline_ms": [
+      {
+        "execution_start": 0,
+        "execution_success": 7
+      },
+      {
+        "execution_start": 468,
+        "execution_success": 471
+      },
+      {
+        "execution_start": 472,
+        "execution_success": 474
+      }
+    ]
+  },
+  "queue": {
+    "queue_running": [],
+    "queue_pending": []
+  }
+}
